@@ -1,8 +1,8 @@
 module.exports = {
-  name: 'dungeon',
-  description: 'Enter the dungeon...',
-  aliases: ['dungeon'],
-  usage: '[commande name]',
+  name: 'profile',
+  description: 'Profile',
+  aliases: ['p'],
+  usage: '[beta profile]',
   cooldown: 5,
   execute(message, args) {
     console.log(message.author)
