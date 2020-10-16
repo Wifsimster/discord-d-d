@@ -1,0 +1,25 @@
+{
+  "name": "discord-d-d",
+  "version": "1.0.0",
+  "description": "Discord Dungeons &amp; Dragons",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wifsimster/discord-d-d.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wifsimster/discord-d-d/issues"
+  },
+  "homepage": "https://github.com/Wifsimster/discord-d-d#readme",
+  "dependencies": {
+    "discord.js": "^12.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0"
+  }
+}
