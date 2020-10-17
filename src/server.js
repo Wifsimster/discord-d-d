@@ -1,6 +1,5 @@
 const fs = require('fs')
 const Discord = require('discord.js')
-
 const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
@@ -21,7 +20,7 @@ client.on('ready', () => {
 })
 
 client.on('message', async message => {
-  if(!message.content.startsWith(prefix) || message.author.bot) {
+  if(!message.content.toLowerCase().startsWith(prefix) || message.author.bot) {
     return
   }
 

@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 module.exports = {
   name: 'help',
   description: 'Forme more info: beta help [command/item/event]',
+  aliases: ['h'],
   usage: '[commande name]',
   execute(message) {
     
