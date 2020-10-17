@@ -12,9 +12,8 @@ module.exports = {
       .setTitle('Commands')
       .setDescription('Add `beta` before any command')
       .addFields(
-        { name: 'Statistics commands', value: '`profile` `inventory`, `professions`, `quest`, `cd`' },
-        { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`, `escape`' },
-        // { name: 'Economy commands', value: '`shop`, `give`, `buy`, `sell`' },
+        { name: 'Characters', value: '`create`, `profile`' },
+        { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`, `escape`' }
       )
     
     message.channel.send(messageEmbed)

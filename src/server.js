@@ -60,7 +60,7 @@ client.on('message', async message => {
   setTimeout(() => timestamps.delete(message.author.id), cooldownAmount)
   
   try {
-    client.commands.get(commandName).execute(message, args)
+    client.commands.get(command.name).execute(message, args)
   } catch (error) {
     console.error(error)
     message.reply('There was an error trying to execute that command !')
