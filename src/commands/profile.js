@@ -1,6 +1,10 @@
 const Discord = require('discord.js')
 const User = require('../models/user')
 
+function getExperienceByLevel(level) {
+  return level * 100
+}
+
 module.exports = {
   name: 'profile',
   description: 'Profile',
@@ -21,15 +25,16 @@ module.exports = {
       let messageEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
         .setAuthor(`${target.username}'s profile`, target.displayAvatarURL(), 'https://discord.js.org')
-        .setTitle(user.title)
-        .setDescription(`${user.race} ${user.class}`)
+        // .setTitle(user.title)
+        .setTitle(`${user.race} ${user.class}`)
         .setThumbnail(target.displayAvatarURL())
-        .addField('Progression', '\u200b')
+        // .addField('Progression', '\u200b')
         .addFields(
-          { name: 'Level', value: `${user.level} (0%)`, inline: true },
-          { name: 'XP', value: `${user.experience}`, inline: true }
+          { name: 'Level', value: `${user.level}`, inline: true },
+          { name: 'XP', value: `${user.experience}/${getExperienceByLevel(user.level)}`, inline: true },
+          { name: 'HP', value: `${user.hitPoint}/${user.constitution * 10}`, inline: true }
         )
-        .addField('Abilities', '\u200b')
+        // .addField('Abilities', '\u200b')
         .addFields(
           { name: 'Charisma', value: `${user.charisma}`, inline: true },
           { name: 'Constitution', value: `${user.constitution}`, inline: true },
@@ -38,7 +43,7 @@ module.exports = {
           { name: 'Strength', value: `${user.strength}`, inline: true },
           { name: 'Wisdom', value: `${user.wisdom}`, inline: true }
         )
-        .addField('Equipment', '\u200b')
+        // .addField('Equipment', '\u200b')
         .addFields(
           { name: 'Weapon', value: `${user.armor || 'none' }`, inline: true },
           { name: 'Shield', value: `${user.shield || 'none' }`, inline: true },

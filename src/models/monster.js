@@ -27,6 +27,11 @@ const Monster = sequelize.define('Monster', {
     defaultValue: 0,
     allowNull: false,
   },
+  challenge: {
+    type: Sequelize.INTEGER,
+    defaultValue: 10,
+    allowNull: false,
+  },
   dice: {
     type: Sequelize.INTEGER,
     defaultValue: 10,

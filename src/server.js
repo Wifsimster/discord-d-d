@@ -20,7 +20,7 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
-  await sequelize.sync({ alter: true })
+  await sequelize.sync({})
   // await sequelize.sync({ force: true })
 
   try {
@@ -28,12 +28,13 @@ client.once('ready', async () => {
     console.log('Connection has been established successfully.')
 
     // Create monsters if not exist
-    await Monster.create({
+    await Monster.bulkCreate([{
       name: 'Baboon',
       type: 'Beast',
       size: 'Small',
       environment: 'Forest',
       challengeRange: 0,
+      challenge: 10,
       dice: 6,
       action: 'Bite',
       charisma: 6,
@@ -42,7 +43,64 @@ client.once('ready', async () => {
       intelligence: 4,
       strength: 8,
       wisdom: 12
-    })
+    }, {
+      name: 'Badger',
+      type: 'Beast',
+      size: 'Tiny',
+      environment: 'Forest',
+      challengeRange: 0,
+      challenge: 10,
+      dice: 4,
+      action: 'Bite',
+      charisma: 5,
+      constitution: 12,
+      dexterity: 11,
+      intelligence: 2,
+      strength: 4,
+      wisdom: 12
+    }, {
+      name: 'Cat',
+      type: 'Beast',
+      size: 'Tiny',
+      environment: 'Forest',
+      challengeRange: 0,
+      dice: 4,
+      action: 'Bite',
+      strength: 3,
+      dexterity: 15,
+      constitution: 10,
+      intelligence: 3,
+      wisdom: 12,
+      charisma: 7
+    }, {
+      name: 'Deer',
+      type: 'Beast',
+      size: 'Medium',
+      environment: 'Forest',
+      challengeRange: 0,
+      dice: 8,
+      action: 'Bite',
+      strength: 11,
+      dexterity: 16,
+      constitution: 11,
+      intelligence: 2,
+      wisdom: 14,
+      charisma: 5
+    }, {
+      name: 'Owl',
+      type: 'Beast',
+      size: 'Tiny',
+      environment: 'Forest',
+      challengeRange: 0,
+      dice: 4,
+      action: 'Talons',
+      strength: 3,
+      dexterity: 13,
+      constitution: 8,
+      intelligence: 2,
+      wisdom: 12,
+      charisma: 7
+    }])
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }

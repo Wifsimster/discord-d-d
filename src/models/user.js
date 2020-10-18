@@ -1,4 +1,4 @@
-const { Sequelize, Op, Model, DataTypes } = require('sequelize')
+const { Sequelize } = require('sequelize')
 const sequelize = require('../db')
 
 const User = sequelize.define('User', {  
@@ -7,6 +7,16 @@ const User = sequelize.define('User', {
     primaryKey: true,
     unique: true,
     allowNull: false
+  },
+  hitPoint: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  },
+  money: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
   },
   charisma: {
     type: Sequelize.INTEGER,
@@ -38,7 +48,6 @@ const User = sequelize.define('User', {
     defaultValue: 0,
     allowNull: false,
   },
-
   title: Sequelize.STRING,
   level: {
     type: Sequelize.INTEGER,
