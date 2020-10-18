@@ -4,6 +4,8 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
+const Monster = require('./models/monster')
+
 const sequelize = require('./db')
 
 const { prefix, token } = require('../config.json')
@@ -24,6 +26,23 @@ client.once('ready', async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
+
+    // Create monsters if not exist
+    await Monster.create({
+      name: 'Baboon',
+      type: 'Beast',
+      size: 'Small',
+      environment: 'Forest',
+      challengeRange: 0,
+      dice: 6,
+      action: 'Bite',
+      charisma: 6,
+      constitution: 11,
+      dexterity: 14,
+      intelligence: 4,
+      strength: 8,
+      wisdom: 12
+    })
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
