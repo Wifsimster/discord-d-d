@@ -1,22 +1,22 @@
 const Monster = require('../models/monster')
 const User = require('../models/user')
+const { Op } = require('sequelize')
 
 const ENVIRONEMENT = 'forest'
 const ATTACK_MATRIX_01 = [...Array(20).keys()]
 const DICE = 20
 
-async function isPlayerAlive(player) {
-  let user = await User.findByPk(player.id)
-  return user && user.hitPoint > 0            
-}
+// async function isPlayerAlive(player) {
+//   let user = await User.findByPk(player.id)
+//   return user && user.hitPoint > 0            
+// }
 
-async function isSomeoneStillAlive(players) {
-  let alive = await Promise.all(players.map(async player => {
-    return await isPlayerAlive(player)
-  }))
-
-  return alive.filter(item => item)
-}
+// async function isSomeoneStillAlive(players) {
+//   let alive = await Promise.all(players.map(async player => {
+//     return await isPlayerAlive(player)
+//   }))
+//   return alive.filter(item => item)
+// }
 
 module.exports = {
   name: 'adventure',
@@ -48,7 +48,7 @@ module.exports = {
         message.channel.send(`🔍 ${player.username} see something ...`)
 
         // Monster
-        let monsters = await Monster.findAll({ where: { challengeRange: 0 }})
+        let monsters = await Monster.findAll({ where: { challengeRange: { [Op.between]: [0, 1] } }})
         let monster = monsters[Math.floor(Math.random() * (monsters.length - 1))]
 
         if(monster) {
