@@ -4,6 +4,8 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
+const sequelize = require('./db')
+
 const { prefix, token } = require('../config.json')
 
 const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'))
@@ -14,6 +16,18 @@ for (const file of commandFiles) {
 }
 
 client.login(token)
+
+client.once('ready', async () => {
+  await sequelize.sync({ alter: true })
+  // await sequelize.sync({ force: true })
+
+  try {
+    await sequelize.authenticate()
+    console.log('Connection has been established successfully.')
+  } catch (error) {
+    console.error('Unable to connect to the database:', error)
+  }
+})
 
 client.on('ready', () => {
   console.info(`Logged in as ${client.user.tag} !`)

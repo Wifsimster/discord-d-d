@@ -3,6 +3,5 @@ module.exports = {
   armor: null,
   shield: null,
   weapon: 'Shortsword',
-  dexterityModifier: 3,
-  wisdomModifier: 3
+  modifier: { dexterity : 3, wisdom: 3 }
 }

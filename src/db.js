@@ -1,5 +1,8 @@
-const Keyv = require('keyv')
-const keyv = new Keyv('sqlite://db.sqlite')
-keyv.on('error', err => console.error('Keyv connection error:', err))
+const { Sequelize } = require('sequelize')
 
-module.exports = keyv
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'db.sqlite'
+})
+
+module.exports = sequelize

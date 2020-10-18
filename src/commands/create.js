@@ -1,10 +1,6 @@
-const Discord = require('discord.js')
-const Keyv = require('keyv')
-const keyv = new Keyv('sqlite://db.sqlite', { namespace: 'user' })
-keyv.on('error', err => console.error('Keyv connection error:', err))
-
 const races = require('../races')
 const classes = require('../classes')
+const User = require('../models/user')
 const abilities = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma']
 
 module.exports = {
@@ -34,7 +30,7 @@ This is a one time thing, be sure to understand what you are doing !`)
       .awaitMessages(filter_01, { max: 1, time: 30000, errors: ['time'] })
       .catch(err => { console.error(err) })
 
-    if(collection_01.first().content.startsWith('y')) {
+    if(collection_01.first().content.toLowerCase().startsWith('y')) {
       let msg = 'I. Choose a race: \n'
       races.map((race, index) => { msg += `${index} - ${race.name} \n` })
       message.channel.send(msg)
@@ -72,69 +68,37 @@ This is a one time thing, be sure to understand what you are doing !`)
         data.weapon = selectedClass.weapon
 
         message.channel.send(`III. Determination of you ability scores
-Bot will now randomly set your 6 abilities between 8 to 15 :\n`)
+Bot will now randomly set your 6 abilities between 8 to 15...\n`)
 
-        abilities.map(ability => {          
+        msg = ''
+
+        abilities.map(item => {
+          let ability = item.toLowerCase()
           let value = Math.floor(Math.random() * (15 - 8 + 1) + 8)
-          data[ability.toLowerCase()] = value
-
-          if(ability.toLowerCase() === 'charisma' && selectedClass.charismaModifier) {
-            data.charisma =  value + selectedClass.charismaModifier
+                    
+          if(selectedClass.modifier[ability]) {            
+            data[ability] = value + selectedClass.modifier[ability]
+            msg += `:game_die: ${item} : ${value} + ${selectedClass.modifier[ability]} \n`
+          } else {            
+            data[ability] = value
+            msg += `:game_die: ${item} : ${value}\n`
           }
-          if(ability.toLowerCase() === 'constitution' && selectedClass.constitutionModifier) {
-            data.constitution =  value + selectedClass.constitutionModifier
-          }
-          if(ability.toLowerCase() === 'dexterity' && selectedClass.dexterityModifier) {
-            data.dexterity =  value + selectedClass.dexterityModifier
-          }
-          if(ability.toLowerCase() === 'intelligence' && selectedClass.intelligenceModifier) {
-            data.intelligence =  value + selectedClass.intelligenceModifier
-          }
-          if(ability.toLowerCase() === 'strength' && selectedClass.strengthModifier) {
-            data.strength =  value + selectedClass.strengthModifier
-          }
-          if(ability.toLowerCase() === 'wisdom' && selectedClass.wisdomModifier) {
-            data.wisdom =  value + selectedClass.wisdomModifier
-          }
-
-          message.channel.send(`:game_die: ${ability} : ${value} \n`)
         })
-          
-        //  =====================================================
 
-        await keyv.set('user', data)
+        message.channel.send(msg)
 
-        let user = await keyv.get('user')
+        let user = await User.create(data).catch(err => {
+          console.error(err)
+          if(err.name === 'SequelizeUniqueConstraintError') {
+            message.channel.send('It seems you have already create your character dude !')
+          } else {
+            message.channel.send('Something went wrong !')
+          }
+        })
 
-        let messageEmbed = new Discord.MessageEmbed()
-          .setColor('#0099ff')
-          .setAuthor(`${message.author.username}'s profile`, author.displayAvatarURL(), 'https://discord.js.org')
-          .setTitle(user.title)
-          .setDescription(`${user.race} ${user.class}`)
-          .setThumbnail(author.displayAvatarURL())
-          .addField('Progression', '\u200b')
-          .addFields(
-            { name: 'Level', value: `${user.level} (0%)`, inline: true },
-            { name: 'XP', value: `${user.xp}`, inline: true }
-          )
-          .addField('Abilities', '\u200b')
-          .addFields(
-            { name: 'Charisma', value: `${user.charisma}`, inline: true },
-            { name: 'Constitution', value: `${user.constitution}`, inline: true },
-            { name: 'Dexterity', value: `${user.dexterity}`, inline: true },
-            { name: 'Intelligence', value: `${user.intelligence}`, inline: true },
-            { name: 'Strength', value: `${user.strength}`, inline: true },
-            { name: 'Wisdom', value: `${user.wisdom}`, inline: true }
-          )
-          .addField('Equipment', '\u200b')
-          .addFields(
-            { name: 'Weapon', value: `${user.armor}`, inline: true },
-            { name: 'Shield', value: `${user.shield}`, inline: true },
-            { name: 'Weapon', value: `${user.weapon}`, inline: true }
-          )
-          .addField('\u200b', '\u200b')
-    
-        message.channel.send(messageEmbed)
+        if(user) {
+          message.channel.send('It\'s all done ! You can go out and get kill now 🔪')
+        }
 
       } else {
         message.channel.send('Okay, next time then ;)')

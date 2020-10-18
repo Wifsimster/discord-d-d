@@ -1,7 +1,7 @@
 module.exports = {
   name: 'Sorcerer',
+  modifier: { wisdom: 3 },
   armor: null,
   weapon: 'Quarterstaff',
-  shield: null,
-  wisdomModifier: 3
+  shield: null
 }
