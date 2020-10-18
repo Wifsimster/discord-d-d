@@ -87,6 +87,8 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
 
         message.channel.send(msg)
 
+        data.hitPoint = data.constitution * 10
+
         let user = await User.create(data).catch(err => {
           console.error(err)
           if(err.name === 'SequelizeUniqueConstraintError') {
@@ -97,9 +99,8 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
         })
 
         if(user) {
-          message.channel.send('It\'s all done ! You can go out and get kill now ☠')
+          message.channel.send('It\'s all done ! You can go out and get killed now ☠')
         }
-
       } else {
         message.channel.send('Okay, next time then ;)')
       }
