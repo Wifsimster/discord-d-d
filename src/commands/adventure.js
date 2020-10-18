@@ -72,7 +72,14 @@ module.exports = {
             let user = await User.findByPk(player.id).catch(err => console.error(err))
 
             if(user.experience + monster.challenge > user.level * 100) {
-              user.update({ level: user.level + 1, experience: 0 })
+              let d10Value = Math.floor((Math.random() * 10) + 1)
+
+              // Level up
+              if([4, 6, 8, 12, 14, 16, 19].includes(user.level + 1)) {
+                // TODO : User can gain +2 aptitudes point
+              }
+
+              user.update({ level: user.level + 1, experience: 0, hitPoint: user.hitPoint + d10Value })
               message.channel.send(`🍾 ${player.username} leved up !`)
             } else {
               user.update({ experience: user.experience + monster.challenge })
@@ -96,12 +103,12 @@ async function attack(message, player, monster) {
   
   if(user) {
     if(user.hitPoint > 0) {
-      // Player attack
 
       // Random event
       if(Math.floor((Math.random() * DICE) + 1) === Math.floor((Math.random() * DICE) + 1)) {
         message.channel.send(`:dagger: ${player.username} slides on a big :shit: and missed his turn !`)
       } else {
+        // Player attack
         let playerMaxHp = user.constitution * 10
         let diceValue = Math.floor((Math.random() * DICE) + 1)
         let attackValue = Math.round(ATTACK_MATRIX_01[diceValue - 1] * user.strength / 10)
