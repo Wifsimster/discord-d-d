@@ -26,7 +26,7 @@ client.once('ready', async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    let monsters = [...require('./monsters_01'), ...require('./monsters_02')]
+    let monsters = [...require('./monsters_01'), ...require('./monsters_02'), ...require('./monsters_03')]
     await Monster.bulkCreate(monsters)
   } catch (error) {
     console.error('Unable to connect to the database:', error)

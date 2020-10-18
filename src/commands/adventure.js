@@ -35,7 +35,7 @@ module.exports = {
       // Keep user with character & life
       await Promise.all(mentions.map(async mention => {
         let user = await User.findByPk(mention.id)
-        if(user && user.hitPoint > 0) { 
+        if(user && user.hitPoint > 0 && user.username !== message.author.username) { 
           players.push(mention) 
         }
       }))
@@ -52,7 +52,7 @@ module.exports = {
         let monster = monsters[Math.floor(Math.random() * (monsters.length - 1))]
 
         if(monster) {
-          message.channel.send(`⚔ A ${monster.size.toLowerCase()} ${monster.name} attack your group ! Be aware ${monster.name.toLowerCase()} can ${monster.action.toLowerCase()} !`)
+          message.channel.send(`⚔ A ${monster.name} (${monster.size.toLowerCase()} ${monster.type.toLowerCase()}) attack your group ! Be aware ${monster.name.toLowerCase()} can ${monster.action.toLowerCase()} !`)
 
           // Attack by player
           monster.maxHitPoint = monster.constitution * 10
@@ -103,44 +103,53 @@ async function attack(message, player, monster) {
   let user = await User.findByPk(player.id).catch(err => console.error(err))
   
   if(user) {
-    if(user.hitPoint > 0) {
+    if(user.currentHitPoint > 0) {
 
       // Random event
       if(Math.floor((Math.random() * DICE) + 1) === Math.floor((Math.random() * DICE) + 1)) {
-        message.channel.send(`:dagger: ${player.username} slides on a big :shit: and missed his turn !`)
+        let diceValue = Math.floor((Math.random() * DICE) + 1)
+        await user.update({ currentHitPoint: user.currentHitPoint - diceValue })
+        
+        let randomMessages = [
+          `:dagger: ${user.username} slides on a big :shit: and hit his head, losing ${diceValue} HP !`,
+          `:dagger: ${user.username} hit himself with his ${user.weapon} , losing ${diceValue} HP !`
+        ]
+
+        message.channel.send(randomMessages[Math.floor((Math.random() * randomMessages.length) + 1)])
+
       } else {
         // Player attack
-        let playerMaxHp = user.constitution * 10
         let diceValue = Math.floor((Math.random() * DICE) + 1)
         let attackValue = Math.round(ATTACK_MATRIX_01[diceValue - 1] * user.strength / 10)
         monster.hitPoint = monster.hitPoint - attackValue
     
         if(monster.hitPoint > 0) { 
           if(attackValue > 0) {
-            message.channel.send(`:dagger: ${player.username} hit the ${monster.size.toLowerCase()} ${monster.name} and made ${attackValue} damage (:game_die: ${diceValue}) - ${monster.size} ${monster.name} [${monster.hitPoint}/${monster.maxHitPoint}]`)
+            message.channel.send(`:dagger: ${user.username} hit the ${monster.name} and made ${attackValue} damage (:game_die: ${diceValue}) - ${monster.size} ${monster.name} [${monster.hitPoint}/${monster.maxHitPoint}]`)
           } else {
-            message.channel.send(`:dagger: ${player.username} tried to hit the ${monster.size.toLowerCase()} ${monster.name} but missed !`)
+            message.channel.send(`:dagger: ${user.username} tried to hit the ${monster.name} but missed !`)
           }
 
           // Monster attack
           diceValue = Math.floor((Math.random() * monster.dice) + 1)            
           attackValue = Math.round(ATTACK_MATRIX_01[diceValue - 1] * monster.strength / 10)
+          user = await User.findByPk(player.id).catch(err => console.error(err))
           let playerHp = user.currentHitPoint - attackValue
           if(playerHp < 0) { playerHp = 0 }
       
           if(attackValue > 0) {
-            message.channel.send(`:dagger: ${monster.size} ${monster.name} hit ${player.username} and made ${attackValue} damage (:game_die: ${diceValue}) - ${player.username} [${playerHp}/${playerMaxHp}]`)
+            message.channel.send(`:dagger: ${monster.size} ${monster.name} hit ${user.username} and made ${attackValue} damage (:game_die: ${diceValue}) - ${user.username} [${playerHp}/${user.hitPoint}]`)
           } else {
-            message.channel.send(`:dagger: ${monster.size} ${monster.name} tried to hit ${player.username} but missed !`)
+            message.channel.send(`:dagger: ${monster.size} ${monster.name} tried to hit ${user.username} but missed !`)
           }
 
           await user.update({ currentHitPoint: playerHp}).catch(err => { console.error(err) })
         } else {
-          message.channel.send(`☠ ${player.username} killed the ${monster.size.toLowerCase()} ${monster.name} with his ${user.weapon.toLowerCase()} (:game_die: ${diceValue})! Yeah !`)
+          message.channel.send(`☠ ${user.username} killed the ${monster.name} with his ${user.weapon.toLowerCase()} (:game_die: ${diceValue})! Yeah !`)
         }  
       }    
     } else {
-      message.channel.send(`☠ ${player.username} is dead !`)
+      message.channel.send(`☠ ${user.username} is dead !`)
     }
   } else {
     message.channel.send(`🏷 ${player.username} has not created his character yet !`)
