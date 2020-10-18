@@ -13,6 +13,7 @@ module.exports = {
 
     let data = {
       id: message.author.id,
+      username: message.author.username,
       title: 'Noobie',
       level: 1,
       xp: 0,
