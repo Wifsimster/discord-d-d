@@ -49,7 +49,7 @@ module.exports = {
         .setTitle(`${user.race} ${user.class}`)
         .setThumbnail(target.displayAvatarURL())
         .addFields(
-          { name: 'Level', value: `${level.level} (${user.experience/level.max}%)`, inline: true },
+          { name: 'Level', value: `${level.level} (${(user.experience/level.max).toFixed(2)}%)`, inline: true },
           { name: 'XP', value: `${user.experience}/${level.max}`, inline: true },
           { name: 'HP', value: `${user.currentHitPoint}/${user.hitPoint}`, inline: true }
         )

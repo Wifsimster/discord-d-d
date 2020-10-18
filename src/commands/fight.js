@@ -5,6 +5,8 @@ module.exports = {
   usage: '[commande name]',
   cooldown: 5,
   execute(message) {    
-    message.channel.send('Fight hardly !')
+    let opponent = message.mentions.users.first()
+
+    message.channel.send(`${message.author} fight ${opponent} !`)
   }
 }

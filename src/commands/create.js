@@ -27,8 +27,8 @@ This is a one time thing, be sure to understand what you are doing !`)
     let filter_01 = response => answers_01.some(answer => answer.toLowerCase() === response.content.toLowerCase())
 
     let collection_01 = await message.channel
-      .awaitMessages(filter_01, { max: 1, time: 30000, errors: ['time'] })
-      .catch(err => { console.error(err) })
+      .awaitMessages(filter_01, { max: 1, time: 30000, errors: ['time'] })      
+      .catch(err => { message.channel.send('Creation stopped !') })
 
     if(collection_01.first().content.toLowerCase().startsWith('y')) {
       let msg = 'I. Choose a race: \n'
@@ -40,7 +40,7 @@ This is a one time thing, be sure to understand what you are doing !`)
     
       let collection_02 = await message.channel
         .awaitMessages(filter_02, { max: 1, time: 30000, errors: ['time'] })
-        .catch(err => { console.error(err) })
+        .catch(err => { message.channel.send('Creation stopped !') })
 
       if(answers_02.includes(collection_02.first().content)) {
         let selectedRace = races.find((race, index) => collection_02.first().content === index.toString())
@@ -57,7 +57,7 @@ This is a one time thing, be sure to understand what you are doing !`)
     
         let collection_03 = await message.channel
           .awaitMessages(filter_03, { max: 1, time: 30000, errors: ['time'] })
-          .catch(err => { console.error(err) })
+          .catch(err => { message.channel.send('Creation stopped !') })
           
         let selectedClass = classes.find((item, index) => collection_03.first().content === index.toString())
         message.channel.send(`You chose the class ${selectedClass.name} !`)
@@ -87,7 +87,8 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
 
         message.channel.send(msg)
 
-        data.hitPoint = data.constitution * 10
+        data.hitPoint = data.constitution * 10        
+        data.currentHitPoint = data.hitPoint
 
         let user = await User.create(data).catch(err => {
           console.error(err)
