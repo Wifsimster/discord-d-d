@@ -8,7 +8,13 @@ const User = sequelize.define('User', {
     unique: true,
     allowNull: false
   },
+  username: Sequelize.STRING,
   hitPoint: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  },
+  currentHitPoint: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
     allowNull: false,   
@@ -49,11 +55,6 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   title: Sequelize.STRING,
-  level: {
-    type: Sequelize.INTEGER,
-    defaultValue: 1,
-    allowNull: false,
-  },
   experience: {
     type: Sequelize.INTEGER,
     defaultValue: 0,

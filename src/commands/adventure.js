@@ -79,7 +79,8 @@ module.exports = {
                 // TODO : User can gain +2 aptitudes point
               }
 
-              user.update({ level: user.level + 1, experience: 0, hitPoint: user.hitPoint + d10Value })
+              let hp = user.hitPoint + d10Value
+              user.update({ level: user.level + 1, experience: 0, hitPoint: hp, currentHitPoint: hp })
               message.channel.send(`🍾 ${player.username} leved up !`)
             } else {
               user.update({ experience: user.experience + monster.challenge })
@@ -124,7 +125,7 @@ async function attack(message, player, monster) {
           // Monster attack
           diceValue = Math.floor((Math.random() * monster.dice) + 1)            
           attackValue = Math.round(ATTACK_MATRIX_01[diceValue - 1] * monster.strength / 10)
-          let playerHp = user.hitPoint - attackValue
+          let playerHp = user.currentHitPoint - attackValue
           if(playerHp < 0) { playerHp = 0 }
       
           if(attackValue > 0) {
@@ -133,7 +134,7 @@ async function attack(message, player, monster) {
             message.channel.send(`:dagger: ${monster.size} ${monster.name} tried to hit ${player.username} but missed !`)
           }
 
-          await user.update({ hitPoint: playerHp}).catch(err => { console.error(err) })
+          await user.update({ currentHitPoint: playerHp}).catch(err => { console.error(err) })
         } else {
           message.channel.send(`☠ ${player.username} killed the ${monster.size.toLowerCase()} ${monster.name} with his ${user.weapon.toLowerCase()} (:game_die: ${diceValue})! Yeah !`)
         }  
