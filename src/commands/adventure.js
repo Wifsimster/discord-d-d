@@ -16,6 +16,7 @@ module.exports = {
     let mentions = message.mentions.users.array()
     
     let players = []
+    let messages = []
     let leader = await User.findByPk(message.author.id)
 
     if(leader && leader.currentHitPoint > 0) { 
@@ -30,62 +31,51 @@ module.exports = {
       }))
 
       if(players.length > 1) {
-        let environment = await Environment.findByPk(leader.environmentId)
-        
-        if(environment) {
-          message.channel.send(`🏕 Your journey in the ${environment.name.toLowerCase()} started ${players.map(user => { return user }) }`)
-        }
+        let environment = await Environment.findByPk(leader.environmentId)        
+        messages.push(`🏕 Your journey in the ${environment.name.toLowerCase()} started ${players.map(user => { return user }) }`)
         
         // User event trigger
         let player = players[random(0, players.length - 1)]
         let triggers = [`🤨 ${player.username} see something ...`, `🤫 ${player.username} heard something ...`]
         let randomTrigger = triggers[random(0, triggers.length - 1)]
-        message.channel.send(randomTrigger)
+        messages.push(randomTrigger)
 
         let monster = await initializeMonster(environment.id)
 
         if(monster) {
-          message.channel.send(`⚔ A ${monster.name} attack your group ! (🗡 ${monster.strength}  🛡 ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
+          messages.push(`⚔ A ${monster.name} attack your group ! (🗡 ${monster.strength}  🛡 ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
 
           let index = 0
           while(index < players.length && monster.currentHitPoint > 0) {
             let currentPlayer = players[index]
             let results = await attackMonster(currentPlayer, monster)
-            monster = results.monster
-            results.messages.map(item => {
-              message.channel.send(item)
-            })
+            messages = [...messages, ...results.messages]
+            monster = results.monster            
               
             // TODO
             // await attackPlayer(currentPlayer, monster)
 
             if(currentPlayer.currentHitPoint <= 0) { players = players.splice(index, 1) }
-
-            if(index === players.length - 1) {
-              index = 0
-            } else {
-              index++
-            }
+            if(index === players.length - 1) { index = 0 } else { index++ }
           }
           
           // Give monster XP to players
           await Promise.all(players.map(async player => {
             let results = await giveXP(player, monster)
-
-            if(results && results.message) {
-              message.channel.send(results.message)
-            }
+            messages = [...messages, ...results.messages]
           }))
 
-          message.channel.send(`${players.map(player => player.username) } got ${monster.challenge} XP !`)          
+          messages.push(`${players.map(player => player.username) } got ${monster.challenge} XP !`)
         }
       }
       else {
-        message.channel.send(`It's dangerous to go alone in an adventure ${message.author} ! Bring some friends next time.`)
+        messages.push(`It's dangerous to go alone in an adventure ${message.author} ! Bring some friends next time.`)
       }
     } else {
-      message.channel.send(`☠ ${message.author} you are dead, dude !`)
+      messages.push(`☠ ${message.author} you are dead, dude !`)
     }
+    // Send all messages at the end
+    messages.map(m => { message.channel.send(m) })
   }
 }
 
@@ -102,7 +92,7 @@ async function attackMonster(player, monster) {
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
           `⚔ ${user.username} slides on a big :shit: and hit his head, losing ${diceValue} HP !`,
-          `⚔ ${user.username} hit himself with his ${user.weapon}, loosing ${diceValue} HP !`
+          `⚔ ${user.username} hit himself with his ${weapon.name}, loosing ${diceValue} HP !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {

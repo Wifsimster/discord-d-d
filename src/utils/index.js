@@ -55,22 +55,25 @@ async function initializeMonster(environmentId) {
 }
 
 async function levelUp(user) {
-  if([4, 6, 8, 12, 14, 16, 19].includes(user.level + 1)) {
+  let currentLevel = getLevelByExperience(user.experience)
+  if([4, 6, 8, 12, 14, 16, 19].includes(currentLevel.level + 1)) {
     // TODO : User can gain +2 aptitudes point
   }
 
   let hp = user.maxHitPoint + user.hitPointAugmentation
-  await user.update({ maxHitPoint: hp, currentHitPoint: hp })
+  return await user.update({ maxHitPoint: hp, currentHitPoint: hp })
 }
 
 async function giveXP(player, monster) {
   let user = await User.findByPk(player.id)
   let currentLevel = getLevelByExperience(user.experience)
+  let messages = []
   if(user.experience + monster.challenge > currentLevel.max) {
     await levelUp(user)
-    return { message: `🍾 ${player.username} leved up ! (+ ❤ ${user.hitPointAugmentation})` }
+    messages.push(`🍾 ${player.username} leved up ! (+ ❤ ${user.hitPointAugmentation})`)
   }
-  await user.update({ experience: user.experience + monster.challenge })            
+  await user.increment('experience', { by: monster.challenge })
+  return { messages: messages }
 }
 
 module.exports = { random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP }
