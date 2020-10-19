@@ -5,13 +5,23 @@ const Ability = sequelize.define('ability', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true
   },
-  description: {
+  type: {    
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
+    defaultValue: 0
   },
-  value: {
+  cost: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  armorClass: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  weight: {
     type: Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 0

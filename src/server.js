@@ -6,20 +6,13 @@ const cooldowns = new Discord.Collection()
 
 const { random } = require('./utils')
 
+const Ability = require('./models/ability')
 const Class = require('./models/class')
 const Environment = require('./models/environment')
 const Monster = require('./models/monster')
 const Race = require('./models/race')
 const User = require('./models/user')
-const Trinket = require('./models/trinket')
-
-
-Monster.belongsTo(Environment)
-Environment.hasMany(Monster)
-User.belongsTo(Class)
-Class.hasMany(User)
-User.belongsTo(Race)
-Race.hasMany(User)
+require('./models/associations')
 
 const sequelize = require('./db')
 
@@ -42,12 +35,14 @@ client.once('ready', async () => {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     
-    await Environment.bulkCreate([...require('./data/environments')])
+    await Environment.bulkCreate([...require('./data/environments')])    
+    await Ability.bulkCreate([...require('./data/abilities')])
+
+    await Race.bulkCreate([...require('./data/races')])
+    await Class.bulkCreate([...require('./data/classes')])
+
     let monsters = [...require('./data/monsters_01'), ...require('./data/monsters_02'), ...require('./data/monsters_03')]
     await Monster.bulkCreate(monsters)    
-    await Race.bulkCreate([...require('./data/classes')])
-    await Class.bulkCreate([...require('./data/classes')])
-    
 
   } catch (error) {
     console.error('Unable to connect to the database:', error)

@@ -1,26 +1,32 @@
-module.exports = {
-  strength: {
+module.exports = [
+  {
+    name: 'Strength',
     value: 10,
     description: 'measuring physical power'
   },
-  dexterity: {
+  {
+    name: 'Dexterity',
     value: 10,
     description: 'measuring agility'
   },
-  constitution: {
+  {
+    name: 'Constitution',
     value: 10,
     description: 'measuring endurance'
   },
-  intelligence: {
+  {
+    name: 'Intelligence',
     value: 10,
     description: 'measuring reasoning and memory'
   },
-  wisdom: {
+  {
+    name: 'Wisdom',
     value: 10,
     description: 'measuring perception and insight'
   },
-  charisma: {
+  {
+    name: 'Charisma',
     value: 10,
     description: 'measuring force of personality'
-  },
-}
+  }
+]
