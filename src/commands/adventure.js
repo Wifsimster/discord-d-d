@@ -125,6 +125,9 @@ async function attackMonster(player, monster) {
     
         if(monster.currentHitPoint <= 0) {
           messages.push(`🎺 ${user.username} killed the ${monster.name} !`)
+
+          // Loot
+          
         }
       }
     } else {

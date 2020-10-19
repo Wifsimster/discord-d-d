@@ -55,6 +55,10 @@ module.exports = {
           { name: 'Shield', value: `${shield ? shield.name + ' 🛡 ' + shield.armorClass : 'none' }`, inline: true },
           { name: 'Weapon', value: `${weapon ? weapon.name + ' ⚔ ' + weapon.damage : 'none' }`, inline: true }
         )
+        .addFields(
+          { name: 'Coins', value: `${ user.coins }`, inline: true },
+          { name: 'Gemstones', value: `${ user.gemstones }`, inline: true }
+        )
     
       message.channel.send(messageEmbed)
     } else {

@@ -112,7 +112,12 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
               msg += `:game_die: ${ability.name} : ${randomValue} + ${selectedRace.abilityScore} \n`
               randomValue = randomValue + selectedRace.abilityScore
             } else {            
-              msg += `:game_die: ${ability.name} : ${randomValue}\n`
+              if(selectedRace.abilityIncrease === 'All') {
+                msg += `:game_die: ${ability.name} : ${randomValue} + ${selectedRace.abilityScore} \n`
+                randomValue = randomValue + selectedRace.abilityScore
+              } else {
+                msg += `:game_die: ${ability.name} : ${randomValue}\n`
+              }
             }
 
             data[ability.name.toLowerCase()] = randomValue
