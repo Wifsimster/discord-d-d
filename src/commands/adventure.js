@@ -4,7 +4,7 @@ const Shield = require('../models/shield')
 const Weapon = require('../models/weapon')
 const Environment = require('../models/environment')
 
-const { random, throwDice, randomDamage, initializeMonster, levelUp, getLevelByExperience, giveXP } = require('../utils')
+const { random, throwDice, initializeMonster, giveXP } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -48,14 +48,19 @@ module.exports = {
           let index = 0
           while(index < players.length && monster.currentHitPoint > 0) {
             let currentPlayer = players[index]
+            
             let results = await attackMonster(currentPlayer, monster)
             messages = [...messages, ...results.messages]
             monster = results.monster            
               
-            // TODO
-            // await attackPlayer(currentPlayer, monster)
+            results = await attackPlayer(currentPlayer, monster)
+            messages = [...messages, ...results.messages]
+            
+            let user = await User.findByPk(currentPlayer.id)
+            if(user.currentHitPoint <= 0) { 
+              players.splice(index, 1)
+            }
 
-            if(currentPlayer.currentHitPoint <= 0) { players = players.splice(index, 1) }
             if(index === players.length - 1) { index = 0 } else { index++ }
           }
           
@@ -65,7 +70,7 @@ module.exports = {
             messages = [...messages, ...results.messages]
           }))
 
-          messages.push(`${players.map(player => player.username) } got ${monster.challenge} XP !`)
+          messages.push(`🏆 ${players.map(player => player.username) } got ${monster.challenge} XP !`)
         }
       }
       else {
@@ -129,60 +134,44 @@ async function attackMonster(player, monster) {
   return { messages, monster }
 }
 
-async function attack(message, player, monster) {          
-  let user = await User.findByPk(player.id).catch(err => console.error(err))
-  
+async function attackPlayer(player, monster) {
+  let messages = []
+  let user = await User.findByPk(player.id)
+  let userCurrentHitPoint = user.currentHitPoint
+  let armor = await Armor.findByPk(user.armorId)
+  let shield = await Shield.findByPk(user.shieldId)
+
   if(user) {
-    if(user.currentHitPoint > 0) {
+    if(monster.currentHitPoint > 0) {
+      let randomValue = throwDice()        
+      let armorClass = armor ? armor.armorClass : 0 + shield ? shield.armorClass : 0
+      let armorDamage = armorClass - randomValue
+      let firstDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
+      let secondDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
 
-      // Random event
-      if(throwDice() === throwDice()) {
-        let diceValue = throwDice()
-        await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
-        let randomMessages = [
-          `:dagger: ${user.username} slides on a big :shit: and hit his head, losing ${diceValue} HP !`,
-          `:dagger: ${user.username} hit himself with his ${user.weapon} , losing ${diceValue} HP !`
-        ]
-        message.channel.send(randomMessages[random(0, randomMessages.length - 1)])
-      } else {
-        // Player attack
-        let diceValue = throwDice()
-        let damageValue = randomDamage(diceValue, user.strength)
-        monster.hitPoint = monster.hitPoint - damageValue
-    
-        if(monster.hitPoint > 0) { 
-          if(damageValue > 0) {
-            message.channel.send(`:dagger: ${user.username} hit the ${monster.name} and made ${damageValue} damage (:game_die: ${diceValue}) - ${monster.size} ${monster.name} [${monster.currentHitPoint}/${monster.maxHitPoint}]`)
-          } else {
-            message.channel.send(`:dagger: ${user.username} tried to hit the ${monster.name} but missed ! (:game_die: ${diceValue})`)
-          }
-
-          // Monster attack
-          diceValue = throwDice(monster.dice)           
-          damageValue = randomDamage(diceValue, monster.strength)
-          user = await User.findByPk(player.id).catch(err => console.error(err))
-          let playerHp = user.currentHitPoint - damageValue
-          if(playerHp < 0) { playerHp = 0 }
-      
-          if(damageValue > 0) {
-            message.channel.send(`:dagger: ${monster.size} ${monster.name} hit ${user.username} and made ${damageValue} damage (:game_die: ${diceValue}) - ${user.username} [${playerHp}/${user.maxHitPoint}]`)
-          } else {
-            message.channel.send(`:dagger: ${monster.size} ${monster.name} tried to hit ${user.username} but missed ! (:game_die: ${diceValue})`)
-          }
-
-          await user.update({ currentHitPoint: playerHp}).catch(err => { console.error(err) })
+      switch(randomValue) {
+      case 20:          
+        messages.push(`⚔ ${monster.name} made a critical hit with ${monster.action} ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
+        userCurrentHitPoint = userCurrentHitPoint - (firstDamageDice + secondDamageDice)
+        break
+      case 1:
+        messages.push(`⚔ ${monster.name} missed ${user.username} ! (:game_die: ${randomValue})`)
+        break
+      default :
+        if(armorDamage < 0 ) {
+          messages.push(`⚔ ${monster.name} hit ${user.username} (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
+          userCurrentHitPoint = userCurrentHitPoint - firstDamageDice
         } else {
-          let weapon = await Weapon.findByPk(user.weaponId)
-          if(weapon) {
-            message.channel.send(`☠ ${user.username} killed the ${monster.name} with his ${weapon.name.toLowerCase()} (:game_die: ${diceValue})! Yeah !`)
-          }
-        }  
-      }    
-    } else {
-      message.channel.send(`☠ ${user.username} is dead !`)
+          messages.push(`⚔ ${monster.name} hit ${user.username} but his armor prevent any damage ! (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 0)`)
+        }
+      }
+      
+      if(userCurrentHitPoint <= 0) {
+        messages.push(`☠ ${monster.name} killed ${user.username} !`)
+      }
+
+      await user.update({ currentHitPoint: userCurrentHitPoint})
     }
-  } else {
-    message.channel.send(`🏷 ${player.username} has not created his character yet !`)
   }
-  return monster
+  return { messages }
 }
