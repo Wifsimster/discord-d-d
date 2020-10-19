@@ -4,7 +4,7 @@ const Shield = require('../models/shield')
 const Weapon = require('../models/weapon')
 const Environment = require('../models/environment')
 
-const { random, throwDice, randomDamage, initializeMonster } = require('../utils')
+const { random, throwDice, randomDamage, initializeMonster, levelUp, getLevelByExperience, giveXP } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -47,20 +47,16 @@ module.exports = {
         if(monster) {
           message.channel.send(`⚔ A ${monster.name} attack your group ! (🗡 ${monster.strength}  🛡 ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
 
-          // while(monster.currentHitPoint > 0) {
           let index = 0
           while(index < players.length && monster.currentHitPoint > 0) {
             let currentPlayer = players[index]
             let results = await attackMonster(currentPlayer, monster)
-
             monster = results.monster
-
-            console.log(monster.currentHitPoint, monster.maxHitPoint)
-
             results.messages.map(item => {
               message.channel.send(item)
             })
               
+            // TODO
             // await attackPlayer(currentPlayer, monster)
 
             if(currentPlayer.currentHitPoint <= 0) { players = players.splice(index, 1) }
@@ -71,25 +67,13 @@ module.exports = {
               index++
             }
           }
-          // }
-
+          
           // Give monster XP to players
           await Promise.all(players.map(async player => {
-            let user = await User.findByPk(player.id).catch(err => console.error(err))
+            let results = await giveXP(player, monster)
 
-            if(user.experience + monster.challenge > user.level * 100) {
-              let d10Value = throwDice(10)
-
-              // Level up
-              if([4, 6, 8, 12, 14, 16, 19].includes(user.level + 1)) {
-                // TODO : User can gain +2 aptitudes point
-              }
-
-              let hp = user.hitPoint + d10Value
-              user.update({ level: user.level + 1, experience: 0, maxHitPoint: hp, currentHitPoint: hp })
-              message.channel.send(`🍾 ${player.username} leved up !`)
-            } else {
-              user.update({ experience: user.experience + monster.challenge })
+            if(results && results.message) {
+              message.channel.send(results.message)
             }
           }))
 
@@ -114,31 +98,33 @@ async function attackMonster(player, monster) {
     if(user.currentHitPoint > 0) {
       // Random event
       if(throwDice() === throwDice()) {
-        let diceValue = throwDice()
+        let diceValue = throwDice(user.hitDie)
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
           `⚔ ${user.username} slides on a big :shit: and hit his head, losing ${diceValue} HP !`,
-          `⚔ ${user.username} hit himself with his ${user.weapon} , losing ${diceValue} HP !`
+          `⚔ ${user.username} hit himself with his ${user.weapon}, loosing ${diceValue} HP !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
-        let randomValue = throwDice(user.dice)          
-        let damage = monster.armorClass - randomValue
+        let randomValue = throwDice()
+        let armorDamage = monster.armorClass - randomValue
+        let firstDamageDice = Math.round(throwDice(user.hitDie) * weapon.damage / user.hitDie)
+        let secondDamageDice =  Math.round(throwDice(user.hitDie) * weapon.damage / user.hitDie)
 
-        switch(randomValue.dice) {
-        case 20:
-          messages.push(`⚔ ${user.username} made a critical hit with his ${weapon.name} ! (:game_die: ${randomValue} = 🗡 ${randomValue})`)
-          monster.currentHitPoint = monster.currentHitPoint - randomValue
+        switch(randomValue) {
+        case 20:          
+          messages.push(`⚔ ${user.username} made a critical hit with his ${weapon.name} ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
+          monster.currentHitPoint = monster.currentHitPoint - (firstDamageDice + secondDamageDice)
           break
         case 1:
           messages.push(`⚔ ${user.username} missed the ${monster.name} ! (:game_die: ${randomValue})`)
           break
         default :
-          if(damage < 0 ) {
-            messages.push(`⚔ ${user.username} hit the ${monster.name} (🛡 ${monster.armorClass} - :game_die: ${randomValue} = 🗡 ${damage})`)
-            monster.currentHitPoint = monster.currentHitPoint + damage
+          if(armorDamage < 0 ) {
+            messages.push(`⚔ ${user.username} hit the ${monster.name} (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
+            monster.currentHitPoint = monster.currentHitPoint - firstDamageDice
           } else {
-            messages.push(`⚔ ${user.username} hit the ${monster.name} but his armor prevent any damage ! (🛡 ${monster.armorClass} - :game_die: ${randomValue} = 🗡 0)`)
+            messages.push(`⚔ ${user.username} hit the ${monster.name} but his armor prevent any damage ! (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 0)`)
           }
         }
     

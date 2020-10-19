@@ -7,7 +7,6 @@ const Class = require('../models/class')
 const Armor = require('../models/armor')
 const Shield = require('../models/shield')
 const Weapon = require('../models/weapon')
-const Ability = require('../models/ability')
 
 module.exports = {
   name: 'profile',
@@ -39,7 +38,7 @@ module.exports = {
         .setTitle(`${race.name} ${classe.name}`)
         .setThumbnail(target.displayAvatarURL())
         .addFields(
-          { name: 'Level', value: `${level.level} (${(user.experience/level.max * 100).toFixed(2)}%)`, inline: true },
+          { name: 'Level', value: `${level.level} (${((user.experience - level.min)/level.max * 100).toFixed(1)}%)`, inline: true },
           { name: 'XP', value: `${user.experience}/${level.max}`, inline: true },
           { name: 'HP', value: `${user.currentHitPoint}/${user.maxHitPoint}`, inline: true }
         )
@@ -52,7 +51,7 @@ module.exports = {
           { name: 'Wisdom', value: `${user.wisdom}`, inline: true }
         )
         .addFields(
-          { name: 'Armor', value: `${armor ? armor.name : 'none' }`, inline: true },
+          { name: 'Armor', value: `${armor ? armor.name + ' 🛡 ' + armor.armorClass : 'none' }`, inline: true },
           { name: 'Shield', value: `${shield ? shield.name + ' 🛡 ' + shield.armorClass : 'none' }`, inline: true },
           { name: 'Weapon', value: `${weapon ? weapon.name + ' ⚔ ' + weapon.damage : 'none' }`, inline: true }
         )
