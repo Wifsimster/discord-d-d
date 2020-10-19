@@ -18,15 +18,13 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
-  // await sequelize.sync({})
-  await sequelize.sync({ force: true })
+  await sequelize.sync({})
+  // await sequelize.sync({ force: true })
 
   try {
     await sequelize.authenticate()
-    console.log('Connection has been established successfully.')
-    
-    await generateTables()
-
+    console.log('Connection has been established successfully.')    
+    // await generateTables()
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
