@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize')
 const sequelize = require('../db')
 
-const User = sequelize.define('User', {  
+const User = sequelize.define('user', {  
   id: {
     type: Sequelize.STRING,
     primaryKey: true,
@@ -15,11 +15,6 @@ const User = sequelize.define('User', {
     allowNull: false,   
   },
   currentHitPoint: {
-    type: Sequelize.INTEGER,
-    defaultValue: 0,
-    allowNull: false,   
-  },
-  money: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
     allowNull: false,   
@@ -60,13 +55,23 @@ const User = sequelize.define('User', {
     defaultValue: 0,
     allowNull: false,
   },
-  class: Sequelize.STRING,
-  race: Sequelize.STRING,
 
   // Equipement
   armor: Sequelize.STRING,
   shield: Sequelize.STRING,
-  weapon: Sequelize.STRING
+  weapon: Sequelize.STRING,
+
+  // Wealth
+  coins: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  },
+  gemstones: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  }
 }, { freezeTableName: true })
 
 module.exports = User

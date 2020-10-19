@@ -4,7 +4,22 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
+const { random } = require('./utils')
+
+const Class = require('./models/class')
+const Environment = require('./models/environment')
 const Monster = require('./models/monster')
+const Race = require('./models/race')
+const User = require('./models/user')
+const Trinket = require('./models/trinket')
+
+
+Monster.belongsTo(Environment)
+Environment.hasMany(Monster)
+User.belongsTo(Class)
+Class.hasMany(User)
+User.belongsTo(Race)
+Race.hasMany(User)
 
 const sequelize = require('./db')
 
@@ -20,14 +35,20 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
-  await sequelize.sync({})
-  // await sequelize.sync({ force: true })
+  // await sequelize.sync({})
+  await sequelize.sync({ force: true })
 
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    let monsters = [...require('./monsters_01'), ...require('./monsters_02'), ...require('./monsters_03')]
-    await Monster.bulkCreate(monsters)
+    
+    await Environment.bulkCreate([...require('./data/environments')])
+    let monsters = [...require('./data/monsters_01'), ...require('./data/monsters_02'), ...require('./data/monsters_03')]
+    await Monster.bulkCreate(monsters)    
+    await Race.bulkCreate([...require('./data/classes')])
+    await Class.bulkCreate([...require('./data/classes')])
+    
+
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
@@ -47,11 +68,15 @@ client.on('message', async message => {
   const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
 
   if (!command) {
-    return
+    let messages = [
+      '🍄 Bot has gone pick mushrooms. We hope he\'ll be back soon !',
+      '🤔 Speak more clearly, bot is hard of hearing !'
+    ]
+    return message.channel.send(messages[random(0, messages.length - 1)])
   }
   
   if(command.args && !args.length) {
-    return message.channel.send(`You didn't provide any arguments, ${message.author} !`)
+    return message.channel.send(`❗ You didn't provide any arguments, ${message.author} !`)
   }
   
   if(!client.commands.has(command.name)) {
@@ -70,7 +95,7 @@ client.on('message', async message => {
     const expirationTime = timestamps.get(message.author.id) + cooldownAmount
     if (now < expirationTime) {
       const timeLeft = (expirationTime - now) / 1000
-      return message.reply(`Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
+      return message.reply(`🕧 Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
     }
   }
 
@@ -81,6 +106,6 @@ client.on('message', async message => {
     client.commands.get(command.name).execute(message, args)
   } catch (error) {
     console.error(error)
-    message.reply('There was an error trying to execute that command !')
+    message.reply('❗ There was an error trying to execute that command !')
   }
 })

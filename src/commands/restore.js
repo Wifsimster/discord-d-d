@@ -12,7 +12,7 @@ module.exports = {
     if(user) {
       let value = Number(args[0] || user.hitPoint)
       await user.update({ currentHitPoint: value })
-      message.channel.send('Your life have been restored !')
+      message.channel.send(`${message.author} your life have been restored !`)
     }
   }
 }

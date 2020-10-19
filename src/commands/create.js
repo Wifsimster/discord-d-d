@@ -1,6 +1,8 @@
-const races = require('../races')
-const classes = require('../classes')
+
+const Race = require('../models/race')
+const Class = require('../models/class')
 const User = require('../models/user')
+
 const abilities = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma']
 
 module.exports = {
@@ -17,6 +19,7 @@ module.exports = {
       title: 'Noobie',
       level: 1,
       xp: 0,
+      environment: 0,
       race: null,
       class: null
     }
@@ -29,7 +32,7 @@ This is a one time thing, be sure to understand what you are doing !`)
 
     let collection_01 = await message.channel
       .awaitMessages(filter_01, { max: 1, time: 30000, errors: ['time'] })      
-      .catch(err => { message.channel.send('Creation stopped !') })
+      .catch(() => { message.channel.send('Creation stopped !') })
 
     if(collection_01.first().content.toLowerCase().startsWith('y')) {
       let msg = 'I. Choose a race: \n'
@@ -41,7 +44,7 @@ This is a one time thing, be sure to understand what you are doing !`)
     
       let collection_02 = await message.channel
         .awaitMessages(filter_02, { max: 1, time: 30000, errors: ['time'] })
-        .catch(err => { message.channel.send('Creation stopped !') })
+        .catch(() => { message.channel.send('Creation stopped !') })
 
       if(answers_02.includes(collection_02.first().content)) {
         let selectedRace = races.find((race, index) => collection_02.first().content === index.toString())
@@ -58,7 +61,7 @@ This is a one time thing, be sure to understand what you are doing !`)
     
         let collection_03 = await message.channel
           .awaitMessages(filter_03, { max: 1, time: 30000, errors: ['time'] })
-          .catch(err => { message.channel.send('Creation stopped !') })
+          .catch(() => { message.channel.send('Creation stopped !') })
           
         let selectedClass = classes.find((item, index) => collection_03.first().content === index.toString())
         message.channel.send(`You chose the class ${selectedClass.name} !`)

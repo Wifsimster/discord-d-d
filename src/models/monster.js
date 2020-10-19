@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
 
-const Monster = sequelize.define('Monster', {
+const Monster = sequelize.define('monster', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -16,11 +16,6 @@ const Monster = sequelize.define('Monster', {
     type: Sequelize.STRING,
     defaultValue: 'Small',
     allowNull: false
-  },
-  environment: {
-    type: Sequelize.STRING,
-    defaultValue: 'Forest',
-    allowNull: false,
   },
   challengeRange: {
     type: Sequelize.INTEGER,
