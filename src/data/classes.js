@@ -117,6 +117,6 @@ module.exports = [
     hitPointAugmentation: 6,
     armor: null,
     shield: null,
-    weapon: 'Quarterstaff',
+    weapon: 'Quaterstaff',
   }
 ]

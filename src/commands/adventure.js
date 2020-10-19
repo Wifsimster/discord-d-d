@@ -1,5 +1,9 @@
 const Monster = require('../models/monster')
 const User = require('../models/user')
+const Armor = require('../models/armor')
+const Shield = require('../models/shield')
+const Weapon = require('../models/weapon')
+
 const { Op } = require('sequelize')
 
 const { random, throwDice, randomDamage } = require('../utils')

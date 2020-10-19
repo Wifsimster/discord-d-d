@@ -86,15 +86,15 @@ This is a one time thing, be sure to understand what you are doing !`)
 
           if(selectedClass.armor) { 
             let armor = await Armor.findOne({ where: { name: selectedClass.armor }}) 
-            data.armorId = armor.id
+            if(armor) { data.armorId = armor.id }
           }
           if(selectedClass.shield) { 
             let shield = await Shield.findOne({ where: { name: selectedClass.shield }})
-            data.shieldId = shield.id
+            if(shield) { data.shieldId = shield.id }
           }
           if(selectedClass.weapon) { 
             let weapon = await Weapon.findOne({ where: { name: selectedClass.weapon }})
-            data.weaponId = weapon.id
+            if(weapon) { data.weaponId = weapon.id }
           }
 
           const abilities = await Ability.findAll()
