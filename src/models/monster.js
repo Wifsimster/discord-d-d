@@ -17,6 +17,11 @@ const Monster = sequelize.define('monster', {
     defaultValue: 'Small',
     allowNull: false
   },
+  armorClass: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,
+  },
   challengeRange: {
     type: Sequelize.INTEGER,
     defaultValue: 0,

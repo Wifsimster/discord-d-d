@@ -5,7 +5,10 @@ client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
 const { random } = require('./utils')
-const { generateTables } = require('./data/generateTables')
+
+require('./models/associations')
+
+// const { generateTables } = require('./data/generateTables')
 const sequelize = require('./db')
 const { prefix, token } = require('../config.json')
 const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'))

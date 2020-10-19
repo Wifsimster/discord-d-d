@@ -124,6 +124,7 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
           data.maxHitPoint = selectedClass.hitPoint + data.constitution
           data.hitPointAugmentation = selectedClass.hitPointAugmentation
           data.currentHitPoint = data.maxHitPoint
+          data.environmentId = 1
 
           let user = await User.create(data).catch(err => {
             console.error(err)

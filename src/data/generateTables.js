@@ -8,8 +8,6 @@ const Class = require('../models/class')
 const Monster = require('../models/monster')
 const Race = require('../models/race')
 
-require('../models/associations')
-
 async function generateTables() {
   await Environment.bulkCreate([...require('./environments')])    
   await Ability.bulkCreate([...require('./abilities')]) 

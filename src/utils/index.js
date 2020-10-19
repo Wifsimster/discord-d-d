@@ -1,4 +1,5 @@
-const ATTACK_MATRIX_01 = [...Array(20).keys()]
+const Monster = require('../models/monster')
+const { Op } = require('sequelize')
 
 function random(min, max) {
   return Math.round(min + Math.random() * (max - min))
@@ -8,8 +9,14 @@ function throwDice(dice = 20) {
   return Math.floor((Math.random() * dice) + 1)
 }
 
-function randomDamage(diceValue, strength) {
-  return Math.round(ATTACK_MATRIX_01[diceValue - 1] * strength / 10)
+// const ATTACK_MATRIX_01 = [...Array(20).keys()]
+
+function randomDamage(user) {
+  if(user) {
+    // return Math.round(ATTACK_MATRIX_01[user.hitDie - 1] * user.strength)
+    return { dice: throwDice(user.hitDie), strength: user.strength }
+  }
+  return 0
 }
 
 function getLevelByExperience(xp) {
@@ -35,4 +42,15 @@ function getLevelByExperience(xp) {
   if(xp >= 190000) { return { level: 20, min: 190000 } }
 }
 
-module.exports = { random, throwDice, randomDamage, getLevelByExperience }
+async function initializeMonster(environmentId) {
+  let monsters = await Monster.findAll({ where: { challengeRange: { [Op.between]: [0, 1] }, environmentId: environmentId }})
+  let monster = monsters[random(0, monsters.length - 1)]
+  if(monster) {
+    monster.maxHitPoint = throwDice(monster.dice) + monster.constitution
+    monster.currentHitPoint = monster.maxHitPoint
+    return monster
+  }
+  return null
+}
+
+module.exports = { random, throwDice, randomDamage, getLevelByExperience, initializeMonster }

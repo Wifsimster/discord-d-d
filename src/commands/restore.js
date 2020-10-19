@@ -10,7 +10,7 @@ module.exports = {
     let user = await User.findByPk(message.author.id)
     
     if(user) {
-      let value = Number(args[0] || user.hitPoint)
+      let value = Number(args[0] || user.maxHitPoint)
       await user.update({ currentHitPoint: value })
       message.channel.send(`${message.author} your life have been restored !`)
     }
