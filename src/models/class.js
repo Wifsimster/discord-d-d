@@ -10,11 +10,21 @@ const Class = sequelize.define('class', {
   hitDie: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    defaultValue: 10
+    defaultValue: 0
+  },
+  hitPoint: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  hitPointAugmentation: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   },
   armor: Sequelize.STRING,
   shield: Sequelize.STRING,
-  weapon: Sequelize.STRING
+  weapon: Sequelize.STRING,
 })
 
 module.exports = Class

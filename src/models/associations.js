@@ -19,9 +19,23 @@ Class.hasMany(User)
 User.belongsTo(Race)
 Race.hasMany(User)
 
+User.belongsTo(Armor)
+Armor.hasMany(User)
+
+User.belongsTo(Shield)
+Shield.hasMany(User)
+
+User.belongsTo(Weapon)
+Weapon.hasMany(User)
+
+User.belongsTo(Environment)
+Environment.hasMany(User)
+
+Race.belongsToMany(Ability, { through: 'raceAbility' })
+Ability.belongsToMany(Race, { through: 'raceAbility' })
+
 Class.belongsToMany(Ability, { through: 'classAbility' })
 Ability.belongsToMany(Class, { through: 'classAbility' })
 
 User.belongsToMany(Trinket, { through: 'userTricket' })
 Trinket.belongsToMany(User, { through: 'userTricket' })
-

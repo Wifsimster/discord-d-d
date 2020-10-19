@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
 
-const Ability = sequelize.define('ability', {
+const Armor = sequelize.define('armor', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -28,4 +28,4 @@ const Ability = sequelize.define('ability', {
   }
 })
 
-module.exports = Ability
+module.exports = Armor

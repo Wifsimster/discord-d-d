@@ -7,10 +7,7 @@ const Ability = sequelize.define('ability', {
     allowNull: false,
     unique: true
   },
-  description: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
+  description: Sequelize.STRING,
   value: {
     type: Sequelize.INTEGER,
     allowNull: false,

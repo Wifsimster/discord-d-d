@@ -5,19 +5,9 @@ client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
 const { random } = require('./utils')
-
-const Ability = require('./models/ability')
-const Class = require('./models/class')
-const Environment = require('./models/environment')
-const Monster = require('./models/monster')
-const Race = require('./models/race')
-const User = require('./models/user')
-require('./models/associations')
-
+const { generateTables } = require('./data/generateTables')
 const sequelize = require('./db')
-
 const { prefix, token } = require('../config.json')
-
 const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
@@ -35,14 +25,7 @@ client.once('ready', async () => {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     
-    await Environment.bulkCreate([...require('./data/environments')])    
-    await Ability.bulkCreate([...require('./data/abilities')])
-
-    await Race.bulkCreate([...require('./data/races')])
-    await Class.bulkCreate([...require('./data/classes')])
-
-    let monsters = [...require('./data/monsters_01'), ...require('./data/monsters_02'), ...require('./data/monsters_03')]
-    await Monster.bulkCreate(monsters)    
+    await generateTables()
 
   } catch (error) {
     console.error('Unable to connect to the database:', error)

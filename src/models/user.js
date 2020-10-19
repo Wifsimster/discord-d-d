@@ -9,12 +9,22 @@ const User = sequelize.define('user', {
     allowNull: false
   },
   username: Sequelize.STRING,
-  hitPoint: {
+  hitDie: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  },
+  maxHitPoint: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
     allowNull: false,   
   },
   currentHitPoint: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+    allowNull: false,   
+  },
+  hitPointAugmentation: {
     type: Sequelize.INTEGER,
     defaultValue: 0,
     allowNull: false,   
@@ -55,11 +65,6 @@ const User = sequelize.define('user', {
     defaultValue: 0,
     allowNull: false,
   },
-
-  // Equipement
-  armor: Sequelize.STRING,
-  shield: Sequelize.STRING,
-  weapon: Sequelize.STRING,
 
   // Wealth
   coins: {
