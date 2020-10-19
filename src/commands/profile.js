@@ -7,6 +7,7 @@ const Class = require('../models/class')
 const Armor = require('../models/armor')
 const Shield = require('../models/shield')
 const Weapon = require('../models/weapon')
+const Item = require('../models/item')
 
 module.exports = {
   name: 'profile',

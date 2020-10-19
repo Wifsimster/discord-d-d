@@ -3,8 +3,9 @@ const Armor = require('../models/armor')
 const Shield = require('../models/shield')
 const Weapon = require('../models/weapon')
 const Environment = require('../models/environment')
+const Item = require('../models/item')
 
-const { random, throwDice, initializeMonster, giveXP } = require('../utils')
+const { random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -33,7 +34,33 @@ module.exports = {
       if(players.length > 1) {
         let environment = await Environment.findByPk(leader.environmentId)        
         messages.push(`🏕 Your journey in the ${environment.name.toLowerCase()} started ${players.map(user => { return user }) }`)
+                
+        // Weapon event
+        if(triggerEvent()) {
+          let player = players[random(0, players.length - 1)]
+          let user = await User.findByPk(player.id)
+          messages.push(`🔍 ${user.username} inspect a pile of trash on the road !`)
+          let weapons = await Weapon.findAll()
+          let weapon = weapons[random(0, weapons.length - 1)]
+          let item = await Item.create({})
+          await item.setWeapon(weapon)   
+          await item.setUser(user)       
+          messages.push(`🎁 ${user.username} found a ${weapon.name} !`)
+        }
         
+        // Shield event
+        if(triggerEvent()) {
+          let player = players[random(0, players.length - 1)]
+          let user = await User.findByPk(player.id)          
+          let shields = await Shield.findAll()
+          let shield = shields[random(0, shields.length - 1)]
+          let item = await Item.create({})
+          await item.setShield(shield)
+          await item.setUser(user)
+          messages.push(`🎁 ${user.username} return a corpse and take his shield !`)
+        }
+
+
         // User event trigger
         let player = players[random(0, players.length - 1)]
         let triggers = [`🤨 ${player.username} see something ...`, `🤫 ${player.username} heard something ...`]
@@ -92,7 +119,7 @@ async function attackMonster(player, monster) {
   if(user) {
     if(user.currentHitPoint > 0) {
       // Random event
-      if(throwDice() === throwDice()) {
+      if(triggerEvent()) {
         let diceValue = throwDice(user.hitDie)
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
@@ -154,7 +181,7 @@ async function attackPlayer(player, monster) {
 
       switch(randomValue) {
       case 20:          
-        messages.push(`⚔ ${monster.name} made a critical hit with ${monster.action} ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
+        messages.push(`⚔ ${monster.name} made a critical hit to ${user.username} ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
         userCurrentHitPoint = userCurrentHitPoint - (firstDamageDice + secondDamageDice)
         break
       case 1:

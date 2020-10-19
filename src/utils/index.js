@@ -10,6 +10,10 @@ function throwDice(dice = 20) {
   return Math.floor((Math.random() * dice) + 1)
 }
 
+function triggerEvent() {
+  return throwDice() === throwDice()
+}
+
 // const ATTACK_MATRIX_01 = [...Array(20).keys()]
 
 function randomDamage(user) {
@@ -76,4 +80,4 @@ async function giveXP(player, monster) {
   return { messages: messages }
 }
 
-module.exports = { random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP }
+module.exports = { random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }

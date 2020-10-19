@@ -13,7 +13,8 @@ module.exports = {
       .setDescription('Add `beta` before any command')
       .addFields(
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
-        { name: 'Fighting commands', value: '`adventure`, `heal`' }
+        { name: 'Fighting commands', value: '`adventure`, `heal`' },
+        { name: 'Inventory', value: '`inventory`' }
       )
     
     message.channel.send(messageEmbed)
