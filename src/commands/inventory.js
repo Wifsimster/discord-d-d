@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 
 const User = require('../models/user')
 const Item = require('../models/item')
+const Inventory = require('../models/inventory')
 
 module.exports = {
   name: 'iventory',
@@ -15,25 +16,13 @@ module.exports = {
     } else {
       target = message.author
     }
-    
-    let user = await User.findByPk(target.id)
+
+    let user = await User.findByPk(target.id, { include: Inventory, where: { equiped: false } })
 
     if(user) {
-      let items = await Item.findAll({ where: { userId: user.id }})
-      let weapons = []
-      let shields = []
-      let armors = []
-
-      await Promise.all(items.map(async item => {
-        if(item.armorId) {
-          armors.push(await Armor.findByPk(item.armorId))
-        }
-        if(item.weaponId) {
-          weapons.push(await Weapon.findByPk(item.weaponId))
-        }
-        if(item.shieldId) {
-          shields.push(await Shield.findByPk(item.shieldId))
-        }
+      
+      let items = await Promise.all(user.inventories.map(async inventory => {
+        return await Item.findByPk(inventory.itemId)
       }))
 
       let messageEmbed = new Discord.MessageEmbed()
@@ -41,23 +30,25 @@ module.exports = {
         .setAuthor(`${target.username}'s inventory`, target.displayAvatarURL(), 'https://discord.js.org')
         .setThumbnail(target.displayAvatarURL())
 
-      let messages = []
-      weapons.map(weapon => {
-        messages.push(`${weapon.name} (⚔ ${weapon.damage})\n`)
+      // Equipments
+      let fields = []
+      items.map(item => {
+        switch(item.objectType) {
+        case 'armor':
+          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          break
+        case 'shield':
+          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          break
+        case 'weapon':
+          fields.push(`${item.name} ⚔ ${item.damage}`)
+          break
+        default:
+          fields.push(`${item.name}`)
+        }
       })
-      if(messages.length > 0) { messageEmbed.addField('Weapons', messages.join('\n')) }
-
-      messages = []
-      shields.map(shield => {
-        messages.push(`${shield.name} (🛡 ${shield.armorClass})\n`)
-      })
-      if(messages.length > 0) { messageEmbed.addField('Shields', messages.join('\n')) }
-
-      messages = []
-      armors.map(armor => {
-        messages.push(`${armor.name} (🛡 ${armor.armorClass})\n`)
-      })
-      if(messages.length > 0) { messageEmbed.addField('armors', messages.join('\n')) }
+    
+      messageEmbed.addField('Equipments', fields.join('\n'), true)
     
       message.channel.send(messageEmbed)
     } else {

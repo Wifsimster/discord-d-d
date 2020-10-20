@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const Environment = require('../models/environment')
 const Item = require('../models/item')
+const Iventory = require('../models/inventory')
 
 const { random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
 
@@ -31,32 +32,21 @@ module.exports = {
       if(players.length > 1) {
         let environment = await Environment.findByPk(leader.environmentId)        
         messages.push(`🏕 Your journey in the ${environment.name.toLowerCase()} started ${players.map(user => { return user }) }`)
-                
-        // Weapon event
+        
         if(triggerEvent()) {
           let player = players[random(0, players.length - 1)]
           let user = await User.findByPk(player.id)
-          messages.push(`🔍 ${user.username} inspect a pile of trash on the road !`)
-          let weapons = await Weapon.findAll()
-          let weapon = weapons[random(0, weapons.length - 1)]
-          let item = await Item.create({})
-          await item.setWeapon(weapon)   
-          await item.setUser(user)       
-          messages.push(`🎁 ${user.username} found a ${weapon.name} !`)
-        }
-        
-        // Shield event
-        if(triggerEvent()) {
-          let player = players[random(0, players.length - 1)]
-          let user = await User.findByPk(player.id)          
-          let shields = await Shield.findAll()
-          let shield = shields[random(0, shields.length - 1)]
-          let item = await Item.create({})
-          await item.setShield(shield)
-          await item.setUser(user)
-          messages.push(`🎁 ${user.username} return a corpse and take his shield !`)
-        }
+          let items = await Item.findAll()
+          let item = items[random(0, items.length - 1)]
+          await Iventory.create({ itemId: item.id, userId: user.id})
+                    
+          let tmp = [
+            `🔍 ${user.username} inspect a pile of trash on the road and found a ${item.name} !`,
+            `🎁 ${user.username} return a corpse and take hist ${item.name} !`
+          ]
 
+          messages.push(tmp[random(0, tmp.length - 1)])
+        }
 
         // User event trigger
         let player = players[random(0, players.length - 1)]

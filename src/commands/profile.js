@@ -21,7 +21,7 @@ module.exports = {
       target = message.author
     }
     
-    let user = await User.findByPk(target.id, { include: Inventory, where: { equpied: true } })
+    let user = await User.findByPk(target.id, { include: Inventory, where: { equiped: true } })
 
     if(user) {
       let level = getLevelByExperience(user.experience)
