@@ -35,19 +35,19 @@ module.exports = {
 
       // Equipments
       let fields = []
-      items.map((item, index) => {
+      items.map(item => {
         switch(item.objectType) {
         case 'armor':
-          fields.push(`\`${index}\` - 🛡 ${item.name} (${item.armorClass})`)
+          fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
           break
         case 'shield':
-          fields.push(`\`${index}\` - 🛡 ${item.name} (${item.armorClass})`)
+          fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
           break
         case 'weapon':
-          fields.push(`\`${index}\` - ⚔ ${item.name} (${item.damage} ${item.damageType} damage) ${item.twoHanded ? '(Two handed)' : '' }`)
+          fields.push(`⚔ \`${item.name}\` (${item.damage} ${item.damageType} damage) ${item.twoHanded ? '(Two handed)' : '' }`)
           break
         default:
-          fields.push(`\`${index}\` - ${item.name}`)
+          fields.push(`${item.name}`)
         }
       })
     

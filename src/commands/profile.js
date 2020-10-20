@@ -21,7 +21,7 @@ module.exports = {
       target = message.author
     }
     
-    let user = await User.findByPk(target.id, { include: Inventory, where: { equiped: true } })
+    let user = await User.findByPk(target.id, { include: Inventory })
 
     if(user) {
       let level = getLevelByExperience(user.experience)
@@ -29,8 +29,12 @@ module.exports = {
       let classe = await Class.findByPk(user.classId)
 
       let items = await Promise.all(user.inventories.map(async inventory => {
-        return await Item.findByPk(inventory.itemId)
+        if(inventory.equiped) {
+          return await Item.findByPk(inventory.itemId)
+        }
       }))
+
+      items = items.filter(i => i)
 
       let messageEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -56,23 +60,25 @@ module.exports = {
       messageEmbed.addField('Wealth', fields.join('\n'), true)
 
       // Equipments
-      fields = []
-      items.map(item => {
-        switch(item.objectType) {
-        case 'armor':
-          fields.push(`${item.name} 🛡 ${item.armorClass}`)
-          break
-        case 'shield':
-          fields.push(`${item.name} 🛡 ${item.armorClass}`)
-          break
-        case 'weapon':
-          fields.push(`${item.name} ⚔ ${item.damage}`)
-          break
-        default:
-          fields.push(`${item.name}`)
-        }
-      })
-      messageEmbed.addField('Equipments', fields.join('\n'), true)
+      if(items) {
+        fields = []
+        items.map(item => {
+          switch(item.objectType) {
+          case 'armor':
+            fields.push(`${item.name} 🛡 ${item.armorClass}`)
+            break
+          case 'shield':
+            fields.push(`${item.name} 🛡 ${item.armorClass}`)
+            break
+          case 'weapon':
+            fields.push(`${item.name} ⚔ ${item.damage}`)
+            break
+          default:
+            fields.push(`${item.name}`)
+          }
+        })
+        messageEmbed.addField('Equipments', fields.join('\n'), true)
+      }
     
       message.channel.send(messageEmbed)
     } else {
