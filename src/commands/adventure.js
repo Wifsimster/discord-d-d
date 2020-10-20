@@ -145,8 +145,12 @@ async function attackMonster(player, monster) {
         if(monster.currentHitPoint <= 0) {
           messages.push(`🎺 ${user.username} killed the ${monster.name} !`)
 
-          // Loot
-          
+          if(triggerEvent()) {
+            let items = await Item.findAll()
+            let item = items[random(0, items.length - 1)]
+            await Inventory.create({ itemId: item.id, userId: user.id})
+            messages.push(`🎁 ${user.username} got a ${item.name} !`)
+          }
         }
       }
     } else {
