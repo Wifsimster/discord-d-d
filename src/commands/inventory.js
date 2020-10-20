@@ -1,11 +1,12 @@
 const Discord = require('discord.js')
 
 const User = require('../models/user')
-const Item = require('../models/item')
 const Inventory = require('../models/inventory')
 
+const { getUserUnequipItems } = require('../utils')
+
 module.exports = {
-  name: 'iventory',
+  name: 'inventory',
   description: 'Inventory',
   aliases: ['i'],
   async execute(message, args) {
@@ -19,14 +20,8 @@ module.exports = {
 
     let user = await User.findByPk(target.id, { include: Inventory })
 
-    if(user) {      
-      let items = await Promise.all(user.inventories.map(async inventory => {
-        if(!inventory.equiped) {
-          return await Item.findByPk(inventory.itemId)
-        }
-      }))
-
-      items = items.filter(i => i)
+    if(user) {   
+      let items = await getUserUnequipItems(user.id)
 
       let messageEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -34,24 +29,27 @@ module.exports = {
         .setThumbnail(target.displayAvatarURL())
 
       // Equipments
-      let fields = []
-      items.map(item => {
-        switch(item.objectType) {
-        case 'armor':
-          fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
-          break
-        case 'shield':
-          fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
-          break
-        case 'weapon':
-          fields.push(`⚔ \`${item.name}\` (${item.damage} ${item.damageType} damage) ${item.twoHanded ? '(Two handed)' : '' }`)
-          break
-        default:
-          fields.push(`${item.name}`)
-        }
-      })
-    
-      messageEmbed.addField('Inventories', fields.join('\n'), true)
+      if(items.length > 0) {
+        let fields = []
+        items.map(item => {
+          switch(item.objectType) {
+          case 'armor':
+            fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
+            break
+          case 'shield':
+            fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
+            break
+          case 'weapon':
+            fields.push(`⚔ \`${item.name}\` (${item.damage} ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' }`)
+            break
+          default:
+            fields.push(`${item.name}`)
+          }
+        })    
+        messageEmbed.addField('🎒 Inventory', fields.join('\n'), true)
+      } else {
+        messageEmbed.addField('🎒 Inventory', 'Such an empty inventory !', true)
+      }
     
       message.channel.send(messageEmbed)
     } else {

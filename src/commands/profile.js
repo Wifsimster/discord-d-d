@@ -60,18 +60,18 @@ module.exports = {
       messageEmbed.addField('Wealth', fields.join('\n'), true)
 
       // Equipments
-      if(items) {
+      if(items.length > 0) {
         fields = []
         items.map(item => {
           switch(item.objectType) {
           case 'armor':
-            fields.push(`${item.name} 🛡 ${item.armorClass}`)
+            fields.push(`\`${item.name}\` 🛡 ${item.armorClass}`)
             break
           case 'shield':
-            fields.push(`${item.name} 🛡 ${item.armorClass}`)
+            fields.push(`\`${item.name}\` 🛡 ${item.armorClass}`)
             break
           case 'weapon':
-            fields.push(`${item.name} ⚔ ${item.damage}`)
+            fields.push(`\`${item.name}\` ⚔ ${item.damage}`)
             break
           default:
             fields.push(`${item.name}`)

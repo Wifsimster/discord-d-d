@@ -3,7 +3,7 @@ const Environment = require('../models/environment')
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
 
-const { random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
+const { getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -67,7 +67,7 @@ module.exports = {
               messages.push('❗ Something went wrong attacking the monster !')
             })
 
-            messages = [...messages, ...results.messages]
+            messages = [...messages, ...results.messages]            
             monster = results.monster            
               
             results = await attackPlayer(currentPlayer, monster)
@@ -107,20 +107,24 @@ module.exports = {
 
 async function attackMonster(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
+  let user = await User.findByPk(player.id, { include: { model: Inventory }})
 
   if(user) {
-    if(user.currentHitPoint > 0) {
-      let items = await Item.findAll({ where: { id: user.inventories.map(i => i.itemId) }})
-      let weapon = items.filter(item => item.objectType === 'weapon')[0]
+    if(user.currentHitPoint > 0) {      
+      let weapon = await getUserEquipedItem(user.id, 'weapon')
+
+      if(!weapon) {
+        messages.push(`🤨 ${user.username} go in an adventure without a weapon !`)
+        return { messages, monster }
+      }
 
       // Random event
       if(triggerEvent()) {
         let diceValue = throwDice(user.hitDie)
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
-          `⚔ ${user.username} slides on a big :shit: and hit his head, losing ${diceValue} HP !`,
-          `⚔ ${user.username} hit himself with his ${weapon.name}, loosing ${diceValue} HP !`
+          `⚔ ${user.username} slides on a big :shit: and hit his head, loosing - ${diceValue} ❤ !`,
+          `⚔ ${user.username} hit himself with his ${weapon.name}, loosing - ${diceValue} ❤ !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
@@ -171,10 +175,9 @@ async function attackPlayer(player, monster) {
   let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
 
   if(user) {
-    let userCurrentHitPoint = user.currentHitPoint  
-    let items = await Item.findAll({ where: { id: user.inventories.map(i => i.itemId) }})
-    let armor = items.filter(item => item.objectType === 'armor')[0]
-    let shield = items.filter(item => item.objectType === 'shield')[0]
+    let userCurrentHitPoint = user.currentHitPoint
+    let armor = await getUserEquipedItem(user.id, 'armor')
+    let shield = await getUserEquipedItem(user.id, 'shield')
 
     if(monster.currentHitPoint > 0) {
       let randomValue = throwDice()        

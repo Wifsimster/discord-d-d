@@ -1,5 +1,8 @@
 const Monster = require('../models/monster')
 const User = require('../models/user')
+const Inventory = require('../models/inventory')
+const Item = require('../models/item')
+
 const { Op } = require('sequelize')
 
 function random(min, max) {
@@ -80,4 +83,19 @@ async function giveXP(player, monster) {
   return { messages: messages }
 }
 
-module.exports = { random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }
+async function getUserEquipedItem(userId, object = 'weapon') {
+  let user = await User.findByPk(userId, { include: { model: Inventory }})
+  let inv = user.inventories.map(i => { if(i.equiped) { return i.itemId } })
+  inv = inv.filter(i => i)
+  let items = await Item.findAll({ where: { id: inv }})
+  return items.filter(item => item.objectType === object)[0]
+}
+
+async function getUserUnequipItems(userId) {
+  let user = await User.findByPk(userId, { include: { model: Inventory }})
+  let inv = user.inventories.map(i => { if(!i.equiped) { return i.itemId } })
+  inv = inv.filter(i => i)
+  return await Item.findAll({ where: { id: inv }})
+}
+
+module.exports = { getUserUnequipItems, getUserEquipedItem, random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }
