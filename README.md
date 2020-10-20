@@ -1,2 +1,1 @@
-# discord-d-d
-Discord Dungeons &amp; Dragons
+# Simpliest Discord bot for Dungeons & Dragons
