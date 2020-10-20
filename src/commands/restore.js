@@ -22,6 +22,9 @@ module.exports = {
       if(user) {
         await user.update({ currentHitPoint: user.maxHitPoint })
         message.channel.send(`${message.author} your life have been restored !`)
+      } else {
+        message.channel.send(`${message.author} doesn't have a character yet !
+  \`beta create\` to create a character`)
       }
     }
   }

@@ -87,7 +87,11 @@ module.exports = {
             messages = [...messages, ...results.messages]
           }))
 
-          messages.push(`🏆 ${players.map(player => player.username) } got ${monster.challenge} XP !`)
+          if(players.length > 0) {
+            messages.push(`🏆 ${players.map(player => player.username) } got ${monster.challenge} XP !`)
+          } else {
+            messages.push('☠ Everyone dies, loosers !')
+          }
         }
       }
       else {

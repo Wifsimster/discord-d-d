@@ -17,13 +17,16 @@ module.exports = {
       target = message.author
     }
 
-    let user = await User.findByPk(target.id, { include: Inventory, where: { equiped: false } })
+    let user = await User.findByPk(target.id, { include: Inventory })
 
-    if(user) {
-      
+    if(user) {      
       let items = await Promise.all(user.inventories.map(async inventory => {
-        return await Item.findByPk(inventory.itemId)
+        if(!inventory.equiped) {
+          return await Item.findByPk(inventory.itemId)
+        }
       }))
+
+      items = items.filter(i => i)
 
       let messageEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -32,23 +35,23 @@ module.exports = {
 
       // Equipments
       let fields = []
-      items.map(item => {
+      items.map((item, index) => {
         switch(item.objectType) {
         case 'armor':
-          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          fields.push(`\`${index}\` - 🛡 ${item.name} (${item.armorClass})`)
           break
         case 'shield':
-          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          fields.push(`\`${index}\` - 🛡 ${item.name} (${item.armorClass})`)
           break
         case 'weapon':
-          fields.push(`${item.name} ⚔ ${item.damage}`)
+          fields.push(`\`${index}\` - ⚔ ${item.name} (${item.damage} ${item.damageType} damage) ${item.twoHanded ? '(Two handed)' : '' }`)
           break
         default:
-          fields.push(`${item.name}`)
+          fields.push(`\`${index}\` - ${item.name}`)
         }
       })
     
-      messageEmbed.addField('Equipments', fields.join('\n'), true)
+      messageEmbed.addField('Inventories', fields.join('\n'), true)
     
       message.channel.send(messageEmbed)
     } else {
