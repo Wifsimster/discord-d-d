@@ -1,7 +1,7 @@
 const User = require('../models/user')
 const Environment = require('../models/environment')
 const Item = require('../models/item')
-const Iventory = require('../models/inventory')
+const Inventory = require('../models/inventory')
 
 const { random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
 
@@ -38,7 +38,7 @@ module.exports = {
           let user = await User.findByPk(player.id)
           let items = await Item.findAll()
           let item = items[random(0, items.length - 1)]
-          await Iventory.create({ itemId: item.id, userId: user.id})
+          await Inventory.create({ itemId: item.id, userId: user.id})
                     
           let tmp = [
             `🔍 ${user.username} inspect a pile of trash on the road and found a ${item.name} !`,
@@ -63,7 +63,10 @@ module.exports = {
           while(index < players.length && monster.currentHitPoint > 0) {
             let currentPlayer = players[index]
             
-            let results = await attackMonster(currentPlayer, monster)
+            let results = await attackMonster(currentPlayer, monster).catch(() => {
+              messages.push('❗ Something went wrong attacking the monster !')
+            })
+
             messages = [...messages, ...results.messages]
             monster = results.monster            
               
@@ -100,11 +103,13 @@ module.exports = {
 
 async function attackMonster(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id)
-  let weapon = await Weapon.findByPk(user.weaponId)
+  let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
 
   if(user) {
     if(user.currentHitPoint > 0) {
+      let items = await Item.findAll({ where: { id: user.inventories.map(i => i.itemId) }})
+      let weapon = items.filter(item => item.objectType === 'weapon')[0]
+
       // Random event
       if(triggerEvent()) {
         let diceValue = throwDice(user.hitDie)
@@ -147,18 +152,22 @@ async function attackMonster(player, monster) {
     } else {
       messages.push(`☠ ${user.username} is dead !`)
     }
+    return { messages, monster }
+  } else {
+    throw Error('User not found !')
   }
-  return { messages, monster }
 }
 
 async function attackPlayer(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id)
-  let userCurrentHitPoint = user.currentHitPoint
-  let armor = await Armor.findByPk(user.armorId)
-  let shield = await Shield.findByPk(user.shieldId)
+  let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
 
   if(user) {
+    let userCurrentHitPoint = user.currentHitPoint  
+    let items = await Item.findAll({ where: { id: user.inventories.map(i => i.itemId) }})
+    let armor = items.filter(item => item.objectType === 'armor')[0]
+    let shield = items.filter(item => item.objectType === 'shield')[0]
+
     if(monster.currentHitPoint > 0) {
       let randomValue = throwDice()        
       let armorClass = armor ? armor.armorClass : 0 + shield ? shield.armorClass : 0

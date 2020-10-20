@@ -143,7 +143,7 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
           if(user) {
             itemsId.map(async itemId => {
               await Inventory
-                .create({ equipied: true, quantity: 1, itemId: itemId, userId: user.id})
+                .create({ equiped: true, quantity: 1, itemId: itemId, userId: user.id})
                 .catch(() => {
                   message.channel.send('❗ Something went wrong when adding your items !')
                 })
