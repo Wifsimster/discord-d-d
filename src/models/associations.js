@@ -12,7 +12,7 @@ Environment.hasMany(Monster)
 
 User.belongsTo(Class)
 Class.hasMany(User)
-
+  
 User.belongsTo(Race)
 Race.hasMany(User)
 

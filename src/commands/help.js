@@ -14,7 +14,7 @@ module.exports = {
       .addFields(
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
         { name: 'Fighting commands', value: '`adventure`, `heal`' },
-        { name: 'Inventory', value: '`inventory`, `equip`, `unequip`' }
+        { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`' }
       )
     
     message.channel.send(messageEmbed)

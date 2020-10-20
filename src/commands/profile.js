@@ -44,7 +44,7 @@ module.exports = {
         .addFields(
           { name: 'Level', value: `${level.level} (${((user.experience - level.min)/level.max * 100).toFixed(1)}%)`, inline: true },
           { name: 'XP', value: `${user.experience}/${level.max}`, inline: true },
-          { name: 'HP', value: `${user.currentHitPoint}/${user.maxHitPoint}`, inline: true }
+          { name: 'HP', value: `${user.currentHitPoint < 0 ? 0 : user.currentHitPoint}/${user.maxHitPoint}`, inline: true }
         )
         .addFields(
           { name: 'Charisma', value: `${user.charisma}`, inline: true },
