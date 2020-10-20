@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 
 module.exports = {
+
   name: 'help',
   description: 'Forme more info: beta help [command/item/event]',
   aliases: ['h'],
@@ -13,7 +14,7 @@ module.exports = {
       .setDescription('Add `beta` before any command')
       .addFields(
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
-        { name: 'Fighting commands', value: '`adventure`, `heal`' },
+        { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`' },
         { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`' }
       )
     
