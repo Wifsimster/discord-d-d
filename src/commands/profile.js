@@ -56,7 +56,7 @@ module.exports = {
         )
         
       // Wealth
-      let fields = [`💰 ${user.coins}`, `💎 ${user.gemstones}`]
+      let fields = [`🪙 ${user.coins}`, `💎 ${user.gemstones}`]
       messageEmbed.addField('Wealth', fields.join('\n'), true)
 
       // Equipments

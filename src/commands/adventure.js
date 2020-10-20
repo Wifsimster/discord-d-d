@@ -3,7 +3,7 @@ const Environment = require('../models/environment')
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
 
-const { getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent } = require('../utils')
+const { getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -80,15 +80,18 @@ module.exports = {
 
             if(index === players.length - 1) { index = 0 } else { index++ }
           }
-          
-          // Give monster XP to players
-          await Promise.all(players.map(async player => {
-            let results = await giveXP(player, monster)
-            messages = [...messages, ...results.messages]
-          }))
 
           if(players.length > 0) {
-            messages.push(`🏆 **${players.map(player => player.username) }** got **${monster.challenge}** XP !`)
+            // Give monster XP to players          
+            await Promise.all(players.map(async player => {
+              let results = await giveXP(player, monster)
+              messages = [...messages, ...results.messages]
+            
+              let user = await User.findByPk(player.id)
+              let randomCoins = random(0, 10 * getLevelByExperience(user.experience).level)
+              await user.update({ coins: user.coins + randomCoins })
+              messages.push(`🏆 **${user.username}** got **${monster.challenge} XP** & **${randomCoins}** 🪙 !`)
+            }))        
           } else {
             messages.push('☠ Everyone dies, loosers !')
           }
@@ -151,7 +154,7 @@ async function attackMonster(player, monster) {
         }
     
         if(monster.currentHitPoint <= 0) {
-          messages.push(`🎺 ${user.username} killed the ${monster.name} !`)
+          messages.push(`🎺 **${user.username}** killed the **${monster.name}** !`)
 
           if(triggerEvent()) {
             let items = await Item.findAll()
