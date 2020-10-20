@@ -4,9 +4,7 @@ const { getLevelByExperience } = require('../utils')
 const User = require('../models/user')
 const Race = require('../models/race')
 const Class = require('../models/class')
-const Armor = require('../models/armor')
-const Shield = require('../models/shield')
-const Weapon = require('../models/weapon')
+const Inventory = require('../models/inventory')
 const Item = require('../models/item')
 
 module.exports = {
@@ -23,15 +21,16 @@ module.exports = {
       target = message.author
     }
     
-    let user = await User.findByPk(target.id)
+    let user = await User.findByPk(target.id, { include: Inventory, where: { equpied: true } })
 
     if(user) {
       let level = getLevelByExperience(user.experience)
       let race = await Race.findByPk(user.raceId)
       let classe = await Class.findByPk(user.classId)
-      let armor = await Armor.findByPk(user.armorId)
-      let shield = await Shield.findByPk(user.shieldId)
-      let weapon = await Weapon.findByPk(user.weaponId)
+
+      let items = await Promise.all(user.inventories.map(async inventory => {
+        return await Item.findByPk(inventory.itemId)
+      }))
 
       let messageEmbed = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -51,15 +50,29 @@ module.exports = {
           { name: 'Strength', value: `${user.strength}`, inline: true },
           { name: 'Wisdom', value: `${user.wisdom}`, inline: true }
         )
-        .addFields(
-          { name: 'Armor', value: `${armor ? armor.name + ' 🛡 ' + armor.armorClass : 'none' }`, inline: true },
-          { name: 'Shield', value: `${shield ? shield.name + ' 🛡 ' + shield.armorClass : 'none' }`, inline: true },
-          { name: 'Weapon', value: `${weapon ? weapon.name + ' ⚔ ' + weapon.damage : 'none' }`, inline: true }
-        )
-        .addFields(
-          { name: 'Coins', value: `${ user.coins }`, inline: true },
-          { name: 'Gemstones', value: `${ user.gemstones }`, inline: true }
-        )
+        
+      // Wealth
+      let fields = [`💰 ${user.coins}`, `💎 ${user.gemstones}`]
+      messageEmbed.addField('Wealth', fields.join('\n'), true)
+
+      // Equipments
+      fields = []
+      items.map(item => {
+        switch(item.objectType) {
+        case 'armor':
+          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          break
+        case 'shield':
+          fields.push(`${item.name} 🛡 ${item.armorClass}`)
+          break
+        case 'weapon':
+          fields.push(`${item.name} ⚔ ${item.damage}`)
+          break
+        default:
+          fields.push(`${item.name}`)
+        }
+      })
+      messageEmbed.addField('Equipments', fields.join('\n'), true)
     
       message.channel.send(messageEmbed)
     } else {

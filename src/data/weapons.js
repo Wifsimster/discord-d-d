@@ -1,6 +1,7 @@
 module.exports = [
   {
-    name: 'Club',
+    name: 'Club',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 10,
     damage: 4,
@@ -8,7 +9,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Dagger',
+    name: 'Dagger',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 200,
     damage: 4,
@@ -16,7 +18,8 @@ module.exports = [
     weight: 1
   },
   {
-    name: 'Greatclub',
+    name: 'Greatclub',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 10,
     damage: 8,
@@ -25,7 +28,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Handaxe',
+    name: 'Handaxe',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 500,
     damage: 6,
@@ -33,7 +37,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Javelin',
+    name: 'Javelin',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 500,
     damage: 6,
@@ -41,7 +46,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Light hammer',
+    name: 'Light hammer',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 200,
     damage: 4,
@@ -49,7 +55,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Mace',
+    name: 'Mace',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 500,
     damage: 6,
@@ -57,7 +64,8 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'Quaterstaff',
+    name: 'Quaterstaff',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 20,
     damage: 4,
@@ -65,7 +73,8 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'Sickle',
+    name: 'Sickle',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 100,
     damage: 4,
@@ -73,7 +82,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Spear',
+    name: 'Spear',    
+    objectType: 'weapon',
     type: 'Simple meele',
     cost: 100,
     damage: 6,
@@ -81,45 +91,50 @@ module.exports = [
     weight: 3
   },
   {
-    name: 'Light crossbow',
+    name: 'Light crossbow',    
+    objectType: 'weapon',
     type: 'Simple range',
     cost: 2500,
     damage: 8,
     damageType: 'percing',
     weight: 5,
     twoHanded: true,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Dart',
+    name: 'Dart',    
+    objectType: 'weapon',
     type: 'Simple range',
     cost: 5,
     damage: 4,
     damageType: 'percing',
     weight: 1/4,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Shortbow',
+    name: 'Shortbow',    
+    objectType: 'weapon',
     type: 'Simple range',
     cost: 2500,
     damage: 6,
     damageType: 'percing',
     weight: 2,
     twoHanded: true,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Sling',
+    name: 'Sling',    
+    objectType: 'weapon',
     type: 'Simple range',
     cost: 1,
     damage: 4,
     damageType: 'percing',
     weight: 0,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Battleaxe',
+    name: 'Battleaxe',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 10000,
     damage: 8,
@@ -127,7 +142,8 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'Flail',
+    name: 'Flail',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 10000,
     damage: 8,
@@ -135,7 +151,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Glaive',
+    name: 'Glaive',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 20000,
     damage: 10,
@@ -144,7 +161,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Greataxe',
+    name: 'Greataxe',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 30000,
     damage: 12,
@@ -153,7 +171,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Greatsword',
+    name: 'Greatsword',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 50000,
     damage: 12,
@@ -162,7 +181,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Halberd',
+    name: 'Halberd',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 20000,
     damage: 10,
@@ -171,7 +191,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Lance',
+    name: 'Lance',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 10000,
     damage: 12,
@@ -179,7 +200,8 @@ module.exports = [
     weight: 6
   },
   {
-    name: 'Longsword',
+    name: 'Longsword',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 15000,
     damage: 8,
@@ -187,7 +209,8 @@ module.exports = [
     weight: 3
   },
   {
-    name: 'Maul',
+    name: 'Maul',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 10000,
     damage: 12,
@@ -196,7 +219,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Morningstar',
+    name: 'Morningstar',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 15000,
     damage: 8,
@@ -204,7 +228,8 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'Pike',
+    name: 'Pike',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 500,
     damage: 10,
@@ -213,7 +238,8 @@ module.exports = [
     twoHanded: true
   },
   {
-    name: 'Rapier',
+    name: 'Rapier',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 2500,
     damage: 8,
@@ -221,7 +247,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Scimitar',
+    name: 'Scimitar',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 2500,
     damage: 6,
@@ -229,7 +256,8 @@ module.exports = [
     weight: 3
   },
   {
-    name: 'Shortsword',
+    name: 'Shortsword',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 1000,
     damage: 6,
@@ -237,7 +265,8 @@ module.exports = [
     weight: 3
   },
   {
-    name: 'Trident',
+    name: 'Trident',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 500,
     damage: 6,
@@ -245,7 +274,8 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'War pick',
+    name: 'War pick',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 500,
     damage: 8,
@@ -253,7 +283,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Warhammer',
+    name: 'Warhammer',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 1500,
     damage: 8,
@@ -261,7 +292,8 @@ module.exports = [
     weight: 2
   },
   {
-    name: 'Whip',
+    name: 'Whip',    
+    objectType: 'weapon',
     type: 'Martial melee',
     cost: 200,
     damage: 4,
@@ -269,41 +301,45 @@ module.exports = [
     weight: 3
   },
   {
-    name: 'Blowgun',
+    name: 'Blowgun',    
+    objectType: 'weapon',
     type: 'Martial ranged',
     cost: 1000,
     damage: 1,
     damageType: 'piercing',
     weight: 1,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Hand crossbow',
+    name: 'Hand crossbow',    
+    objectType: 'weapon',
     type: 'Martial ranged',
     cost: 7500,
     damage: 6,
     damageType: 'piercing',
     weight: 3,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Heavy crossbow',
+    name: 'Heavy crossbow',    
+    objectType: 'weapon',
     type: 'Martial ranged',
     cost: 5000,
     damage: 10,
     damageType: 'piercing',
     weight: 18,
     twoHanded: true,
-    ammunition: true
+    needAmmunition: true
   },
   {
-    name: 'Longbow',
+    name: 'Longbow',    
+    objectType: 'weapon',
     type: 'Martial ranged',
     cost: 5000,
     damage: 8,
     damageType: 'piercing',
     weight: 2,
     twoHanded: true,
-    ammunition: true
+    needAmmunition: true
   }
 ]

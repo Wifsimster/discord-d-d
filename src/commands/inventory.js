@@ -1,9 +1,6 @@
 const Discord = require('discord.js')
 
 const User = require('../models/user')
-const Armor = require('../models/armor')
-const Shield = require('../models/shield')
-const Weapon = require('../models/weapon')
 const Item = require('../models/item')
 
 module.exports = {
@@ -44,17 +41,23 @@ module.exports = {
         .setAuthor(`${target.username}'s inventory`, target.displayAvatarURL(), 'https://discord.js.org')
         .setThumbnail(target.displayAvatarURL())
 
+      let messages = []
       weapons.map(weapon => {
-        messageEmbed.addField(weapon.name, `⚔  ${weapon.damage}`, true)
+        messages.push(`${weapon.name} (⚔ ${weapon.damage})\n`)
       })
+      if(messages.length > 0) { messageEmbed.addField('Weapons', messages.join('\n')) }
 
+      messages = []
       shields.map(shield => {
-        messageEmbed.addField(shield.name, `🛡  ${shield.armorClass}`, true)
+        messages.push(`${shield.name} (🛡 ${shield.armorClass})\n`)
       })
+      if(messages.length > 0) { messageEmbed.addField('Shields', messages.join('\n')) }
 
+      messages = []
       armors.map(armor => {
-        messageEmbed.addField(armor.name, `🛡  ${armor.armorClass}`, true)
+        messages.push(`${armor.name} (🛡 ${armor.armorClass})\n`)
       })
+      if(messages.length > 0) { messageEmbed.addField('armors', messages.join('\n')) }
     
       message.channel.send(messageEmbed)
     } else {

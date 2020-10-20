@@ -1,6 +1,7 @@
 module.exports = [
   {
-    name: 'Shield',
+    name: 'Shield',    
+    objectType: 'shield',
     type: 'Wood',
     cost: 10,
     armorClass: 2,

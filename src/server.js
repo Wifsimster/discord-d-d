@@ -8,7 +8,7 @@ const { random } = require('./utils')
 
 require('./models/associations')
 
-// const { generateTables } = require('./data/generateTables')
+const { syncTables, populateTables } = require('./data/utils')
 const sequelize = require('./db')
 const { prefix, token } = require('../config.json')
 const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'))
@@ -21,13 +21,13 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
-  await sequelize.sync({})
+  // await syncTables()  
   // await sequelize.sync({ force: true })
 
   try {
     await sequelize.authenticate()
-    console.log('Connection has been established successfully.')    
-    // await generateTables()
+    console.log('Connection has been established successfully.')
+    // await populateTables()
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }

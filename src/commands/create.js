@@ -1,10 +1,9 @@
 const User = require('../models/user')
 const Race = require('../models/race')
 const Class = require('../models/class')
-const Armor = require('../models/armor')
-const Shield = require('../models/shield')
-const Weapon = require('../models/weapon')
+const Item = require('../models/item')
 const Ability = require('../models/ability')
+const Inventory = require('../models/inventory')
 
 const { random } = require('../utils')
 
@@ -84,17 +83,19 @@ This is a one time thing, be sure to understand what you are doing !`)
 
           data.classId = selectedClass.id
 
+          let itemsId = []
+
           if(selectedClass.armor) { 
-            let armor = await Armor.findOne({ where: { name: selectedClass.armor }}) 
-            if(armor) { data.armorId = armor.id }
+            let item = await Item.findOne({ where: { name: selectedClass.armor }}) 
+            if(item) { itemsId.push(item.id) }
           }
           if(selectedClass.shield) { 
-            let shield = await Shield.findOne({ where: { name: selectedClass.shield }})
-            if(shield) { data.shieldId = shield.id }
+            let item = await Item.findOne({ where: { name: selectedClass.shield }})
+            if(item) { itemsId.push(item.id) }
           }
           if(selectedClass.weapon) { 
-            let weapon = await Weapon.findOne({ where: { name: selectedClass.weapon }})
-            if(weapon) { data.weaponId = weapon.id }
+            let item = await Item.findOne({ where: { name: selectedClass.weapon }})
+            if(item) { itemsId.push(item.id) }
           }
 
           const abilities = await Ability.findAll()
@@ -132,15 +133,21 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
           data.environmentId = 1
 
           let user = await User.create(data).catch(err => {
-            console.error(err)
             if(err.name === 'SequelizeUniqueConstraintError') {
               message.channel.send('❗ It seems you have already create your character dude !')
             } else {
-              message.channel.send('❗ Something went wrong !')
+              message.channel.send('❗ Something went wrong creating your character !')
             }
           })
 
           if(user) {
+            itemsId.map(async itemId => {
+              await Inventory
+                .create({ equipied: true, quantity: 1, itemId: itemId, userId: user.id})
+                .catch(() => {
+                  message.channel.send('❗ Something went wrong when adding your items !')
+                })
+            })
             message.channel.send('It\'s all done ! You can go out and get killed now ☠')
           }
         } else {

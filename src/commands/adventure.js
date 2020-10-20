@@ -1,7 +1,4 @@
 const User = require('../models/user')
-const Armor = require('../models/armor')
-const Shield = require('../models/shield')
-const Weapon = require('../models/weapon')
 const Environment = require('../models/environment')
 const Item = require('../models/item')
 

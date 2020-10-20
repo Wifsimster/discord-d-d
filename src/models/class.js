@@ -5,6 +5,7 @@ const Class = sequelize.define('class', {
   name: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true
   },
   description: Sequelize.STRING,
   hitDie: {
