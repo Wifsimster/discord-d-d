@@ -1,6 +1,4 @@
 const User = require('../models/user')
-const Item = require('../models/item')
-const Inventory = require('../models/inventory')
 
 const { getUserEquipedItem, random, throwDice, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
 
