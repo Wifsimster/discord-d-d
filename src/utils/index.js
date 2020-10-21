@@ -76,7 +76,7 @@ async function giveXP(player, monster) {
   let messages = []
   if(user.experience + monster.challenge > currentLevel.max) {
     await levelUp(user)
-    messages.push(`🍾 ${player.username} leved up ! (+ ❤ ${user.hitPointAugmentation})`)
+    messages.push(`🍾 **${player.username}** leved up ! (+ ❤ ${user.hitPointAugmentation})`)
   }
   await user.increment('experience', { by: monster.challenge })
   return { messages: messages }
@@ -124,6 +124,48 @@ async function getItem(name) {
   }
 }
 
-module.exports = { getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
+async function savingThrow(userId) {
+  let messages = []
+  let user = await User.findByPk(userId)
+  let randomValue = throwDice()
+  let abilityScore = Math.max(...[user.strength, user.dexterity, user.constitution, user.intelligence, user.wisdom, user.charisma])
+  
+  if(randomValue >= abilityScore) {
+    messages.push(`:wind_blowing_face: **${user.username}** survive the last damages by making a saving throws (:game_die: ${randomValue} >= ${abilityScore})`)
+  } else {
+    let newCurrentHitPoint = user.currentHitPoint - randomValue
+    messages.push(`⚔ **${user.username}** tried a saving throws but failed (:game_die: ${randomValue} < ${abilityScore})`)
+    await user.update({ currentHitPoint: newCurrentHitPoint < 0 ? 0 : newCurrentHitPoint })
+  }
+  return { messages }
+}
+
+async function heal(userId) {
+  let messages = []
+  let user = await User.findByPk(userId)
+
+  if(user.currentHitPoint < user.maxHitPoint) {
+    let inventoryPotion = await getPotionFromUser(user.id)
+    
+    if(inventoryPotion && inventoryPotion.quantity > 0) {
+      let firstThrowValue = throwDice(4)
+      let secondThrowValue = throwDice(4)
+      let randomHitPoint = firstThrowValue + secondThrowValue + 2
+      let toHeal = user.maxHitPoint - user.currentHitPoint
+      if(randomHitPoint > toHeal) {
+        randomHitPoint = toHeal
+      }
+      await user.increment('currentHitPoint', { by: randomHitPoint })
+      messages.push(`❤ **${user.username}** restored his life : ${user.currentHitPoint}/${user.maxHitPoint} ❤`) 
+    } else {
+      messages.push(`❤ **${user.username}** you don't have any \`Life_potion\` !`)
+    }
+  } else {
+    messages.push(`❤ **${user.username}** you are already at 100% ❤ !`)
+  }
+  return { messages }
+}
+
+module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent 
 }

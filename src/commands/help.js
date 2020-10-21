@@ -4,6 +4,7 @@ module.exports = {
   name: 'help',
   description: 'Forme more info: beta help [command/item/event]',
   aliases: ['h'],
+  cooldown: 5,
   usage: '[commande name]',
   execute(message) {
     let messageEmbed = new Discord.MessageEmbed()

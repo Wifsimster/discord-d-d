@@ -3,6 +3,7 @@ const { throwDice, triggerEvent } = require('../utils')
 
 module.exports = {
   name: 'charity',
+  cooldown: 60,
   async execute(message) {
     let user = await User.findByPk(message.author.id)
     let randomValue = throwDice()

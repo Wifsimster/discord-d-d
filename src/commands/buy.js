@@ -14,20 +14,24 @@ module.exports = {
     if(args[0]) {
       let item = await getItem(args[0])
 
-      if(user.coins >= item.cost * number) {
-        let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
-        if(inventory) {
-          await inventory.increment('quantity', { by : number })
+      if(item) {
+        if(user.coins >= item.cost * number) {
+          let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
+          if(inventory) {
+            await inventory.increment('quantity', { by : number })
+          } else {
+            await Inventory.create({ quantity: number, userId: user.id, itemId: item.id })
+          }
+          await user.decrement('coins', { by: item.cost * number })
+          message.channel.send(`**${message.author}** buy ${number} \`${item.name}\` for ${item.cost * number} 🪙 !`)
         } else {
-          await Inventory.create({ quantity: number, userId: user.id, itemId: item.id })
+          message.channel.send(`**${message.author}** you don't have ${item.cost * number} 🪙 !`)
         }
-        await user.decrement('coins', { by: item.cost * number })
-        message.channel.send(`${message.author} buy ${number} \`${item.name}\` for ${item.cost * number} 🪙 !`)
-      } else {
-        message.channel.send(`${message.author} you don't have ${item.cost * number} 🪙 !`)
+      } else {      
+        message.channel.send(`Item not found \`${args[0]}\` !`)
       }
     } else {
-      message.channel.send(`${message.author} you have to specified a item !`)
+      message.channel.send(`**${message.author}** you have to specified a item !`)
     }
   }
 }

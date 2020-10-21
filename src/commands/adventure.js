@@ -3,7 +3,7 @@ const Environment = require('../models/environment')
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
 
-const { getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
+const { heal, savingThrow, getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -41,8 +41,8 @@ module.exports = {
           await Inventory.create({ itemId: item.id, userId: user.id})
 
           let tmp = [
-            `🔍 ${user.username} inspect a pile of trash on the road and found a ${item.name} !`,
-            `🎁 ${user.username} return a corpse and take hist ${item.name} !`
+            `🔍 ${user.username} inspect a pile of trash on the road and found a \`${item.name}\` !`,
+            `🎁 ${user.username} return a corpse and take his \`${item.name}\` !`
           ]
 
           messages.push(tmp[random(0, tmp.length - 1)])
@@ -50,7 +50,10 @@ module.exports = {
 
         // User event trigger
         let player = players[random(0, players.length - 1)]
-        let triggers = [`🤨 **${player.username}** see something ...`, `🤫 **${player.username}** heard something ...`]
+        let triggers = [`🤨 **${player.username}** see something ...`, 
+          `🤫 **${player.username}** heard something ...`, 
+          `🤫 **${player.username}** walk on something ...`
+        ]
         let randomTrigger = triggers[random(0, triggers.length - 1)]
         messages.push(randomTrigger)
 
@@ -93,7 +96,7 @@ module.exports = {
               messages.push(`🏆 **${user.username}** got **${monster.challenge} XP** & **${randomCoins}** 🪙 !`)
             }))        
           } else {
-            messages.push('☠ Everyone dies, loosers !')
+            messages.push('☠ **Everyone dies, loosers !**')
           }
         }
       }
@@ -127,7 +130,8 @@ async function attackMonster(player, monster) {
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
           `⚔ **${user.username}** slides on a big :shit: and hit his head, loosing - ${diceValue} ❤ !`,
-          `⚔ **${user.username}** hit himself with his **${weapon.name}**, loosing - ${diceValue} ❤ !`
+          `⚔ **${user.username}** hit himself with his **${weapon.name}**, loosing - ${diceValue} ❤ !`,
+          `:mouse_trap:  **${user.username}** walk on a trap and loose - ${diceValue} ❤ !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
@@ -178,6 +182,7 @@ async function attackPlayer(player, monster) {
   let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
 
   if(user) {
+    let results
     let userCurrentHitPoint = user.currentHitPoint
     let armor = await getUserEquipedItem(user.id, 'armor')
     let shield = await getUserEquipedItem(user.id, 'shield')
@@ -202,20 +207,19 @@ async function attackPlayer(player, monster) {
           messages.push(`⚔ **${monster.name}** hit **${user.username}** (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
           
           let potentialUserCurrentHitPoint = userCurrentHitPoint - firstDamageDice
-          
+
           if(potentialUserCurrentHitPoint <= 0) {
-            let randoValue = throwDice()
-            let abilityScore = Math.max(...[user.strength, user.dexterity, user.constitution, user.intelligence, user.wisdom, user.charisma])
-            
-            if(randoValue >= abilityScore) {
-              messages.push(`⚔ **${user.username}** survive the last damages by making a saving throws (:game_die: ${randomValue} >= ${abilityScore})`)
+            if(random(0, 1) === 0) {
+              results = await heal(user.id)
+              messages = [...messages, ...results.messages]
             } else {
-              messages.push(`⚔ **${user.username}** tried a saving throws but failed (:game_die: ${randomValue} < ${abilityScore})`)
-              messages.push(`☠ **${monster.name}** killed **${user.username}** !`)
-              userCurrentHitPoint = 0
+              results = await savingThrow(user.id)
+              messages = [...messages, ...results.messages]
             }
-          } else {
-            userCurrentHitPoint = userCurrentHitPoint - firstDamageDice
+          }
+
+          if(user.currentHitPoint <= 0) {
+            messages.push(`☠ **${monster.name}** killed **${user.username}** !`)
           }
         } else {
           messages.push(`⚔ **${monster.name}** hit **${user.username}** but his armor prevent any damage ! (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 0)`)
