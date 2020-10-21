@@ -202,6 +202,7 @@ async function attackPlayer(player, monster) {
           messages.push(`⚔ **${monster.name}** hit **${user.username}** (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
           
           let potentialUserCurrentHitPoint = userCurrentHitPoint - firstDamageDice
+          
           if(potentialUserCurrentHitPoint <= 0) {
             let randoValue = throwDice()
             let abilityScore = Math.max(...[user.strength, user.dexterity, user.constitution, user.intelligence, user.wisdom, user.charisma])
