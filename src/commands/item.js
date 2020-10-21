@@ -7,7 +7,7 @@ module.exports = {
       let item = await getItem(args[0])
 
       if(item) {
-        message.channel.send(`\`${item.name}\`: ${item.description}`)
+        message.channel.send(`${item.cost} 🪙 | \`${item.name}\`: ${item.description}`)
       } else {
         message.channel.send(`No item called \`${args[0]}\` found !`)
       }

@@ -14,11 +14,11 @@ module.exports = {
         let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id, equiped: 0 }})
 
         if(inventory) {
-          messages.push(`**${user.username}** drop \`${item.name}\` on the floor, you have 5s to pick it up : \`pickup\``)
+          messages.push(`**${user.username}** drop \`${item.name}\` on the floor, you have 20s to pick it up : \`pickup\``)
           
           // Wait reaction
           const filter = message => message.content.includes('pickup')
-          const collector = message.channel.createMessageCollector(filter, { time: 5000 })
+          const collector = message.channel.createMessageCollector(filter, { time: 20000 })
 
           collector.on('collect', async m => {
             if(!m.author.bot) {
@@ -29,7 +29,12 @@ module.exports = {
 
           collector.on('end', async collected => {
             if(collected.size === 0) {
-              messages.push('Nobody pick it up, it\'s now lost forever !')
+              if(inventory.quantity > 1) {
+                await inventory.decrement('quantity', { by: 1 })
+              } else {
+                await inventory.destroy()
+              }
+              message.channel.send('Nobody pick it up, it\'s now lost forever !')
             }
           })
         } else {
