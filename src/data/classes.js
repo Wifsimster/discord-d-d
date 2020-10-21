@@ -25,7 +25,7 @@ module.exports = [
     hitDie: 8,
     hitPoint: 8,
     hitPointAugmentation: 8,
-    armor: 'Scale mail',
+    armor: 'Scale_mail',
     shield: 'Shield',
     weapon: 'Mace'
   },
@@ -45,7 +45,7 @@ module.exports = [
     hitDie: 10,
     hitPoint: 10,
     hitPointAugmentation: 10,
-    armor: 'Chain mail',
+    armor: 'Chain_mail',
     shield: 'Shield',
     weapon: 'Longsword'
   },
@@ -65,7 +65,7 @@ module.exports = [
     hitDie: 10,
     hitPoint: 10,
     hitPointAugmentation: 10,
-    armor: 'Chain mail',
+    armor: 'Chain_mail',
     shield: 'Shield',
     weapon: 'Longsword'
   },
@@ -75,7 +75,7 @@ module.exports = [
     hitDie: 10,
     hitPoint: 10,
     hitPointAugmentation: 10,
-    armor: 'Scale mail',
+    armor: 'Scale_mail',
     shield: null,
     weapon: 'Longbow'
   },
@@ -97,7 +97,7 @@ module.exports = [
     hitPointAugmentation: 6,
     armor: null,
     shield: null,
-    weapon: 'Light crossbow',
+    weapon: 'Light_crossbow',
   },
   {
     name: 'Warlock',
@@ -107,7 +107,7 @@ module.exports = [
     hitPointAugmentation: 8,
     armor: 'Leather',
     shield: null,
-    weapon: 'Light crossbow',
+    weapon: 'Light_crossbow',
   },
   {
     name: 'Wizard',

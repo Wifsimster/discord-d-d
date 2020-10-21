@@ -28,27 +28,38 @@ module.exports = {
         .setAuthor(`${target.username}'s inventory`, target.displayAvatarURL(), 'https://discord.js.org')
         .setThumbnail(target.displayAvatarURL())
 
+      let totalWeight = 0
+
       // Equipments
       if(items.length > 0) {
         let fields = []
-        items.map(item => {
+        await Promise.all(items.map(async item => {
+          let inventory = await Inventory.findOne({ where: { itemId: item.id }})
+          totalWeight += inventory.quantity * item.weight
+
           switch(item.objectType) {
+          case 'consumable':
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.weight} 🪨)`)
+            break
+          case 'item':
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.weight} 🪨)`)
+            break
           case 'armor':
-            fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.armorClass} armor class) (${item.weight} 🪨)`)
             break
           case 'shield':
-            fields.push(`🛡 \`${item.name}\` (${item.armorClass} armor class)`)
+            fields.push(`${inventory.quantity} 🛡 \`${item.name}\` (${item.armorClass} armor class) (${item.weight} 🪨)`)
             break
           case 'weapon':
-            fields.push(`⚔ \`${item.name}\` (${item.damage} ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' }`)
+            fields.push(`${inventory.quantity} ⚔ \`${item.name}\` (${item.damage} ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} 🪨)`)
             break
           default:
-            fields.push(`${item.name}`)
+            fields.push(`${inventory.quantity} ${item.name} (${item.weight} 🪨)`)
           }
-        })    
-        messageEmbed.addField('🎒 Inventory', fields.join('\n'), true)
+        }))
+        messageEmbed.addField(`Inventory (${totalWeight} 🪨)`, fields.join('\n'), true)
       } else {
-        messageEmbed.addField('🎒 Inventory', 'Such an empty inventory !', true)
+        messageEmbed.addField('Inventory', 'Such an empty inventory !', true)
       }
     
       message.channel.send(messageEmbed)

@@ -8,7 +8,7 @@ const Inventory = sequelize.define('inventory', {
     defaultValue: false
   },
   quantity: {
-    type: Sequelize.BOOLEAN,
+    type: Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 1
   },

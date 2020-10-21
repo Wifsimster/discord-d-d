@@ -29,12 +29,14 @@ const Item = sequelize.define('item', {
   },
   armorClass: {
     type: Sequelize.INTEGER,
-    allowNull: false,
     defaultValue: 0
   },
   damage: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    defaultValue: 0
+  },
+  value: {
+    type: Sequelize.INTEGER,
     defaultValue: 0
   },
   damageType: Sequelize.STRING,  

@@ -18,19 +18,21 @@ async function syncTables() {
 }
 
 async function populateTables() {
-  await Ability.bulkCreate([...require('./abilities')]) 
-  await Environment.bulkCreate([...require('./environments')])
+  // await Ability.bulkCreate([...require('./abilities')]) 
+  // await Environment.bulkCreate([...require('./environments')])
 
-  await Item.bulkCreate([...require('./armors')]) 
-  await Item.bulkCreate([...require('./shields')]) 
-  await Item.bulkCreate([...require('./weapons')]) 
-  await Item.bulkCreate([...require('./trinkets')])
+  // await Item.bulkCreate([...require('./armors')]) 
+  // await Item.bulkCreate([...require('./shields')]) 
+  // await Item.bulkCreate([...require('./weapons')]) 
+  // await Item.bulkCreate([...require('./consumables')])
+  // await Item.bulkCreate([...require('./items')])
+  // await Item.bulkCreate([...require('./trinkets')])
   
-  await Race.bulkCreate([...require('./races')])
-  await Class.bulkCreate([...require('./classes')])
+  // await Race.bulkCreate([...require('./races')])
+  // await Class.bulkCreate([...require('./classes')])
 
-  let monsters = [...require('./monsters_01'), ...require('./monsters_02'), ...require('./monsters_03')]
-  await Monster.bulkCreate(monsters)
+  // let monsters = [...require('./monsters_01'), ...require('./monsters_02'), ...require('./monsters_03')]
+  // await Monster.bulkCreate(monsters)
 }
 
 module.exports = { syncTables, populateTables }

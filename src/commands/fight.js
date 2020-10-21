@@ -11,21 +11,31 @@ module.exports = {
   cooldown: 5,
   async execute(message) {
     if(message.mentions.users.first()) {    
-      let leader = await User.findByPk(message.author.id)      
-      let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon')  
+      let leader = await User.findByPk(message.author.id)
+      let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon')
+
+      if(!leaderWeapon) {
+        message.channel.send(`**${leader.username}** you don't have equiped a weapon !`)
+        return
+      }
   
       let opponent = await User.findByPk(message.mentions.users.first().id)      
       let opponentWeapon = await getUserEquipedItem(opponent.id, 'weapon') 
       
+      if(!opponentWeapon) {
+        message.channel.send(`**${opponentWeapon.username}** you don't have equiped a weapon !`)
+        return
+      }
+
       let messages = []
       messages.push(`⚔ **${leader.username}** (❤ ${leader.currentHitPoint}/${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.currentHitPoint}/${opponent.maxHitPoint})`)
       messages.push(`⚔ **${leader.username}** with his ${leaderWeapon.name} (🗡 ${leaderWeapon.damage}) defie **${opponent.username}** with his ${opponentWeapon.name} (🗡 ${opponentWeapon.damage})`)
 
       if(opponent.currentHitPoint <= 0) {
-        messages.push(`🤪 ${leader.username} tried to fight the corpse of ${opponent.username}...`)
+        messages.push(`🤪 **${leader.username}** tried to fight the corpse of **${opponent.username}**...`)
       } else {
         if(leader.currentHitPoint <= 0) {
-          messages.push(`🤪 ${opponent.username} tried to fight the corpse of ${leader.username}...`)
+          messages.push(`🤪 **${opponent.username}** tried to fight the corpse of **${leader.username}**...`)
         }
       }
 

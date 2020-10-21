@@ -85,7 +85,11 @@ async function giveXP(player, monster) {
 
 async function getUserEquipedItem(userId, object = 'weapon') {
   let user = await User.findByPk(userId, { include: { model: Inventory }})
-  let inv = user.inventories.map(i => { if(i.equiped) { return i.itemId } })
+  let inv = user.inventories.map(i => { 
+    if(i.equiped) { 
+      return i.itemId 
+    } 
+  })
   inv = inv.filter(i => i)
   let items = await Item.findAll({ where: { id: inv }})
   return items.filter(item => item.objectType === object)[0]
@@ -98,4 +102,21 @@ async function getUserUnequipItems(userId) {
   return await Item.findAll({ where: { id: inv }})
 }
 
-module.exports = { getUserUnequipItems, getUserEquipedItem, random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }
+async function getPotionFromUser(userId) {
+  let user = await User.findByPk(userId, { include: { model: Inventory }})
+  let potion = await Item.findOne({ where: { name: 'Life_potion' }}) 
+
+  let results = await Promise.all(user.inventories.map(async inventory => {
+    if(inventory.itemId === potion.id) {
+      return inventory
+    }
+  }))
+
+  results = results.filter(i => i)
+
+  if(results[0]) {
+    return results[0]
+  }
+}
+
+module.exports = { getPotionFromUser, getUserUnequipItems, getUserEquipedItem, random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }

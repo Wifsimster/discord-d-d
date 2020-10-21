@@ -10,7 +10,7 @@ require('./models/associations')
 
 const { syncTables, populateTables } = require('./data/utils')
 const sequelize = require('./db')
-const { prefix, token } = require('../config.json')
+const { prefix, token } = require('../config')
 const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {

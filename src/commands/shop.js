@@ -8,7 +8,7 @@ module.exports = {
   async execute(message, args) {
     let page = 1
     let limit = 10
-    let type = 'weapon'
+    let type = 'consumable'
 
     if(args[0]) {
       type = args[0]
@@ -30,6 +30,12 @@ module.exports = {
       let fields = []
       items.map(item => {
         switch(item.objectType) {
+        case 'consumable':
+          fields.push(`${item.cost} 🪙 | \`${item.name}\` : ${item.description}`)
+          break
+        case 'item':
+          fields.push(`${item.cost} 🪙 | \`${item.name}\` : ${item.description}`)
+          break
         case 'armor':
           fields.push(`${item.cost} 🪙 | \`${item.name}\` (🛡 ${item.armorClass} 🪨 ${item.weight})`)
           break
@@ -40,13 +46,15 @@ module.exports = {
           fields.push(`${item.cost} 🪙 | \`${item.name}\` (🗡 ${item.damage} 🪨 ${item.weight}) ${item.twoHanded ? '(Two handed)' : '' }`)
           break
         default:
-          fields.push(`${item.name}`)
+          fields.push(`${item.cost} 🪙 | \`${item.name}\``)
         }
       })    
       messageEmbed.addField(`${type.toUpperCase()} ${page}/${maxPages}`, fields.join('\n'), true)
     } else {
       messageEmbed.addField('Items', 'Such an empty shop !', true)
     }
+
+    messageEmbed.setFooter('Usage: beta shop [type] [page]\nTypes: [consumable, item, armor, shield, weapon, ammunition]')
     
     message.channel.send(messageEmbed)
   } 
