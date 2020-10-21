@@ -2,8 +2,7 @@ const Monster = require('../models/monster')
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
 const Item = require('../models/item')
-
-const { Op } = require('sequelize')
+const { Sequelize, Op } = require('sequelize')
 
 function random(min, max) {
   return Math.round(min + Math.random() * (max - min))
@@ -119,4 +118,12 @@ async function getPotionFromUser(userId) {
   }
 }
 
-module.exports = { getPotionFromUser, getUserUnequipItems, getUserEquipedItem, random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent }
+async function getItem(name) {
+  if(name) {
+    return await Item.findOne({ where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('name')), Sequelize.fn('lower', name)) })
+  }
+}
+
+module.exports = { getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
+  random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent 
+}
