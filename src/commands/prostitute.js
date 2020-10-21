@@ -2,7 +2,7 @@ const User = require('../models/user')
 const { throwDice, triggerEvent, random } = require('../utils')
 
 module.exports = {
-  name: 'prostitue',
+  name: 'prostitute',
   cooldown: 60,
   async execute(message) {
     let user = await User.findByPk(message.author.id)
