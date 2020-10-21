@@ -13,7 +13,7 @@ module.exports = {
       .addFields(
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
         { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`, `alive`' },
-        { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `item`' }
+        { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `buy`, `item`' }
       )    
     message.channel.send(messageEmbed)
   }
