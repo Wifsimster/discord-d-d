@@ -34,7 +34,7 @@ module.exports = {
       if(items.length > 0) {
         let fields = []
         await Promise.all(items.map(async item => {
-          let inventory = await Inventory.findOne({ where: { itemId: item.id }})
+          let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
           totalWeight += inventory.quantity * item.weight
 
           switch(item.objectType) {

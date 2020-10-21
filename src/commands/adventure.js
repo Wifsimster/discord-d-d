@@ -221,7 +221,7 @@ async function attackPlayer(player, monster) {
         }
       }
 
-      await user.update({ currentHitPoint: userCurrentHitPoint})
+      await user.update({ currentHitPoint: userCurrentHitPoint < 0 ? 0 : userCurrentHitPoint })
     }
   }
   return { messages }

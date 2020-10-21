@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
-const Item = require('../models/item')
+
+const { getItem } = require('../utils')
 
 module.exports = {
   name: 'buy',
@@ -11,7 +12,7 @@ module.exports = {
     let user = await User.findByPk(message.author.id)
 
     if(args[0]) {
-      let item = await Item.findOne({ where: { name: args[0] }})    
+      let item = await getItem(args[0])
 
       if(user.coins >= item.cost * number) {
         let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
