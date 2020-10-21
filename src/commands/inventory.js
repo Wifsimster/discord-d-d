@@ -45,13 +45,13 @@ module.exports = {
             fields.push(`${inventory.quantity} \`${item.name}\` (${item.weight} 🪨)`)
             break
           case 'armor':
-            fields.push(`${inventory.quantity} \`${item.name}\` (${item.armorClass} armor class) (${item.weight} 🪨)`)
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.armorClass} 🛡 ${item.weight} 🪨)`)
             break
           case 'shield':
-            fields.push(`${inventory.quantity} 🛡 \`${item.name}\` (${item.armorClass} armor class) (${item.weight} 🪨)`)
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.armorClass} 🛡 ${item.weight} 🪨)`)
             break
           case 'weapon':
-            fields.push(`${inventory.quantity} ⚔ \`${item.name}\` (${item.damage} ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} 🪨)`)
+            fields.push(`${inventory.quantity} \`${item.name}\` (${item.damage} ⚔  ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} 🪨)`)
             break
           default:
             fields.push(`${inventory.quantity} ${item.name} (${item.weight} 🪨)`)
