@@ -195,7 +195,31 @@ async function decrementEquipedItemsCondition(userId) {
   }
 }
 
+async function getUserItemCondition(userId, itemId) {
+  let inventory = await Inventory.findOne({ where: { userId: userId, itemId: itemId }})
+
+  if(inventory) {
+    return inventory.condition
+  }
+
+  return null
+}
+
+async function detemineWeaponDamage(userId) {
+  let weapon = await getUserEquipedItem(userId, 'weapon')
+
+  if(weapon) {
+    let inventoryWeapon = await Inventory.findOne({ where: { userId: userId, itemId: weapon.id }})
+    if(inventoryWeapon) {
+      let weapon = await Item.findByPk(inventoryWeapon.itemId)
+      let maxDamage = Math.ceil(weapon.damage * (inventoryWeapon.condition / 100))
+      return maxDamage
+    }
+  }
+  return null
+}
+
 module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent,
-  determineValue, decrementEquipedItemsCondition
+  determineValue, decrementEquipedItemsCondition, getUserItemCondition, detemineWeaponDamage
 }

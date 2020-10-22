@@ -2,8 +2,9 @@ const User = require('../models/user')
 
 const { 
   getUserEquipedItem, random, throwDice, 
-  triggerEvent,
-  decrementEquipedItemsCondition } = require('../utils')
+  triggerEvent, detemineWeaponDamage,
+  decrementEquipedItemsCondition, 
+  getUserItemCondition} = require('../utils')
 
 module.exports = {
   name: 'fight',
@@ -19,18 +20,36 @@ module.exports = {
         message.channel.send(`**${leader.username}** you don't have equiped a weapon !`)
         return
       }
-  
-      let opponent = await User.findByPk(message.mentions.users.first().id)      
-      let opponentWeapon = await getUserEquipedItem(opponent.id, 'weapon') 
       
+      if(getUserItemCondition(leader.id, leaderWeapon.id) === 0) {
+        message.channel.send(`**${opponent.username}** your weapon is broken, fix it !`)
+        return
+      }
+  
+      let opponent = await User.findByPk(message.mentions.users.first().id)
+
+      if(!opponent) {
+        return message.channel.send(`**${message.mentions.users.first()}** doesn't have a character ! \`beta create\``)
+      }
+
+      let opponentWeapon = await getUserEquipedItem(opponent.id, 'weapon')
+
       if(!opponentWeapon) {
         message.channel.send(`**${opponentWeapon.username}** you don't have equiped a weapon !`)
         return
       }
 
+      if(getUserItemCondition(opponent.id, opponentWeapon.id) === 0) {
+        message.channel.send(`**${opponent.username}** your weapon is broken, fix it !`)
+        return
+      }
+
+      let leaderWeaponDamage = await detemineWeaponDamage(leader.id)
+      let opponentWeaponDamage = await detemineWeaponDamage(opponent.id)
+
       let messages = []
       messages.push(`⚔ **${leader.username}** (❤ ${leader.currentHitPoint}/${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.currentHitPoint}/${opponent.maxHitPoint})`)
-      messages.push(`⚔ **${leader.username}** with his ${leaderWeapon.name} (🗡 ${leaderWeapon.damage}) defie **${opponent.username}** with his ${opponentWeapon.name} (🗡 ${opponentWeapon.damage})`)
+      messages.push(`⚔ **${leader.username}** with his ${leaderWeapon.name} (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his ${opponentWeapon.name} (🗡 ${opponentWeaponDamage})`)
 
       if(opponent.currentHitPoint <= 0) {
         messages.push(`🤪 **${leader.username}** tried to fight the corpse of **${opponent.username}**...`)
@@ -85,11 +104,12 @@ async function attack(leader, opponent) {
       return messages
     }
      
+    let leaderWeaponDamage = await detemineWeaponDamage(leader.id)
     let randomValue = throwDice()
     let opponentArmorClass = (opponentArmor ? opponentArmor.armorClass : 0 + opponentShield ? opponentShield.armorClass : 0)
     let armorDamage = opponentArmorClass - randomValue
-    let firstDamageDice = Math.round(throwDice(leader.hitDie) * leaderWeapon.damage / leader.hitDie)
-    let secondDamageDice =  Math.round(throwDice(leader.hitDie) * leaderWeapon.damage / leader.hitDie)
+    let firstDamageDice = Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
+    let secondDamageDice =  Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
 
     switch(randomValue) {
     case 20:          
