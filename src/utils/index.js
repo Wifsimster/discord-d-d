@@ -84,14 +84,19 @@ async function giveXP(player, monster) {
 
 async function getUserEquipedItem(userId, object = 'weapon') {
   let user = await User.findByPk(userId, { include: { model: Inventory }})
-  let inv = user.inventories.map(i => { 
-    if(i.equiped) { 
-      return i.itemId 
-    } 
-  })
-  inv = inv.filter(i => i)
-  let items = await Item.findAll({ where: { id: inv }})
-  return items.filter(item => item.objectType === object)[0]
+  if(user && user.inventories) {
+    let inv = user.inventories.map(i => { 
+      if(i.equiped) { 
+        return i.itemId 
+      } 
+    })
+    inv = inv.filter(i => i)
+    if(inv) {
+      let items = await Item.findAll({ where: { id: inv }})
+      return items.filter(item => item.objectType === object)[0]
+    }
+  }
+  return null
 }
 
 async function getUserUnequipItems(userId) {
@@ -205,7 +210,7 @@ async function getUserItemCondition(userId, itemId) {
   return null
 }
 
-async function detemineWeaponDamage(userId) {
+async function determineWeaponDamage(userId) {
   let weapon = await getUserEquipedItem(userId, 'weapon')
 
   if(weapon) {
@@ -219,7 +224,21 @@ async function detemineWeaponDamage(userId) {
   return null
 }
 
+async function determineArmorValue(userId, type = 'armor') {
+  let armor = await getUserEquipedItem(userId, type)
+
+  if(armor) {
+    let inventoryArmor = await Inventory.findOne({ where: { userId: userId, itemId: armor.id }})
+    if(inventoryArmor) {
+      let armor = await Item.findByPk(inventoryArmor.itemId)
+      let armorClass = Math.ceil(armor.armorClass * (inventoryArmor.condition / 100))
+      return armorClass
+    }
+  }
+  return 0
+}
+
 module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent,
-  determineValue, decrementEquipedItemsCondition, getUserItemCondition, detemineWeaponDamage
+  determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue
 }

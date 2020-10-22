@@ -9,8 +9,11 @@ const {
   getUserEquipedItem, 
   random, throwDice, 
   initializeMonster, giveXP, 
+  determineWeaponDamage,
   triggerEvent, getLevelByExperience, 
-  decrementEquipedItemsCondition } = require('../utils')
+  decrementEquipedItemsCondition, 
+  getUserItemCondition,
+  determineArmorValue} = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -77,7 +80,7 @@ module.exports = {
               messages.push('❗ Something went wrong attacking the monster !')
             })
 
-            messages = [...messages, ...results.messages]            
+            messages = [...messages, ...results.messages]      
             monster = results.monster            
               
             results = await attackPlayer(currentPlayer, monster)
@@ -123,14 +126,21 @@ module.exports = {
 
 async function attackMonster(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id, { include: { model: Inventory }})
+  let user = await User.findByPk(player.id)
 
   if(user) {
     if(user.currentHitPoint > 0) {      
       let weapon = await getUserEquipedItem(user.id, 'weapon')
-
+      
       if(!weapon) {
         messages.push(`🤨 **${user.username}** go in an adventure without a weapon !`)
+        return { messages, monster }
+      }
+
+      let weaponCondition = await getUserItemCondition(user.id, weapon.id)
+
+      if(weaponCondition === 0) {
+        messages.push(`🤨 **${user.username}** go in an adventure with a broken weapon !`)
         return { messages, monster }
       }
 
@@ -145,10 +155,11 @@ async function attackMonster(player, monster) {
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
+        let weaponDamage = await determineWeaponDamage(user.id)
         let randomValue = throwDice()
         let armorDamage = monster.armorClass - randomValue
-        let firstDamageDice = Math.round(throwDice(user.hitDie) * weapon.damage / user.hitDie)
-        let secondDamageDice =  Math.round(throwDice(user.hitDie) * weapon.damage / user.hitDie)
+        let firstDamageDice = Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
+        let secondDamageDice =  Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
 
         switch(randomValue) {
         case 20:          
@@ -189,24 +200,22 @@ async function attackMonster(player, monster) {
 
 async function attackPlayer(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id, { include: { model: Inventory, where: { equiped: true } }})
+  let user = await User.findByPk(player.id)
 
   if(user) {
     let results
     let userCurrentHitPoint = user.currentHitPoint
-    let armor = await getUserEquipedItem(user.id, 'armor')
-    let shield = await getUserEquipedItem(user.id, 'shield')
 
     if(monster.currentHitPoint > 0) {
-      let randomValue = throwDice()        
-      let armorClass = armor ? armor.armorClass : 0 + shield ? shield.armorClass : 0
+      let randomValue = throwDice()
+      let armorClass = await determineArmorValue(user.id, 'armor') + await determineArmorValue(user.id, 'shield')
       let armorDamage = armorClass - randomValue
       let firstDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
       let secondDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
 
       switch(randomValue) {
       case 20:          
-        messages.push(`⚔ **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
+        messages.push(`⚔ **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => - 🗡 ${firstDamageDice + secondDamageDice})`)
         userCurrentHitPoint = userCurrentHitPoint - (firstDamageDice + secondDamageDice)
         break
       case 1:

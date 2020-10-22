@@ -2,9 +2,10 @@ const User = require('../models/user')
 
 const { 
   getUserEquipedItem, random, throwDice, 
-  triggerEvent, detemineWeaponDamage,
+  triggerEvent, determineWeaponDamage,
   decrementEquipedItemsCondition, 
-  getUserItemCondition} = require('../utils')
+  getUserItemCondition,
+  determineArmorValue} = require('../utils')
 
 module.exports = {
   name: 'fight',
@@ -44,8 +45,8 @@ module.exports = {
         return
       }
 
-      let leaderWeaponDamage = await detemineWeaponDamage(leader.id)
-      let opponentWeaponDamage = await detemineWeaponDamage(opponent.id)
+      let leaderWeaponDamage = await determineWeaponDamage(leader.id)
+      let opponentWeaponDamage = await determineWeaponDamage(opponent.id)
 
       let messages = []
       messages.push(`⚔ **${leader.username}** (❤ ${leader.currentHitPoint}/${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.currentHitPoint}/${opponent.maxHitPoint})`)
@@ -94,9 +95,7 @@ async function attack(leader, opponent) {
   leader = await User.findByPk(leader.id)
   opponent = await User.findByPk(opponent.id)
   
-  let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon')  
-  let opponentArmor = await getUserEquipedItem(opponent.id, 'armor')
-  let opponentShield = await getUserEquipedItem(opponent.id, 'shield')
+  let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon') 
 
   if(leader.currentHitPoint > 0 && opponent.currentHitPoint > 0) {
     if(!leaderWeapon) {
@@ -104,9 +103,9 @@ async function attack(leader, opponent) {
       return messages
     }
      
-    let leaderWeaponDamage = await detemineWeaponDamage(leader.id)
+    let leaderWeaponDamage = await determineWeaponDamage(leader.id)
     let randomValue = throwDice()
-    let opponentArmorClass = (opponentArmor ? opponentArmor.armorClass : 0 + opponentShield ? opponentShield.armorClass : 0)
+    let opponentArmorClass = await determineArmorValue(opponent.id, 'armor') + await determineArmorValue(opponent.id, 'shield')
     let armorDamage = opponentArmorClass - randomValue
     let firstDamageDice = Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
     let secondDamageDice =  Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)

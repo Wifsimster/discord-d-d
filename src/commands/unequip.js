@@ -1,5 +1,6 @@
 const Inventory = require('../models/inventory')
-const Item = require('../models/item')
+
+const { getItem } = require('../utils')
 
 module.exports = {
   name: 'unequip',
@@ -10,7 +11,7 @@ module.exports = {
     let author = message.author
 
     if(args[0]) {
-      let item = await Item.findOne({ where: { name: args[0] }})
+      let item = await getItem(args[0])
 
       if(item) {
         let inventory = await Inventory.findOne( { where: { itemId: item.id } })

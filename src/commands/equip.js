@@ -9,14 +9,15 @@ module.exports = {
   cooldown: 5,
   async execute(message, args) {
     let author = message.author
+    let userId = author.id
 
     if(args[0]) {
       let item = await getItem(args[0])
 
       if(item) {
-        let inventory = await Inventory.findOne( { where: { itemId: item.id } })
+        let inventory = await Inventory.findOne( { where: { userId: userId, itemId: item.id } })
         if(inventory) {
-          let equipedInventories = await Inventory.findAll({ where: { equiped: true }})
+          let equipedInventories = await Inventory.findAll({ where: { userId: userId, equiped: true }})
 
           await Promise.all(equipedInventories.map(async inventory => {
             let object = await Item.findByPk(inventory.itemId)
