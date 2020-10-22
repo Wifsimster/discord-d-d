@@ -6,6 +6,7 @@ const Race = require('../models/race')
 const Class = require('../models/class')
 const Inventory = require('../models/inventory')
 const Item = require('../models/item')
+const inventory = require('./inventory')
 
 module.exports = {
   name: 'profile',
@@ -62,21 +63,22 @@ module.exports = {
       // Equipments
       if(items.length > 0) {
         fields = []
-        items.map(item => {
+        await Promise.all(items.map(async item => {
+          let inventory = await Inventory.findOne({ where: { userId: user.id, itemId: item.id }})
           switch(item.objectType) {
           case 'armor':
-            fields.push(`\`${item.name}\` 🛡 ${item.armorClass}`)
+            fields.push(`\`${item.name}\` 🛡 ${item.armorClass} :tools: ${inventory.condition} %`)
             break
           case 'shield':
-            fields.push(`\`${item.name}\` 🛡 ${item.armorClass}`)
+            fields.push(`\`${item.name}\` 🛡 ${item.armorClass} :tools: ${inventory.condition} %`)
             break
           case 'weapon':
-            fields.push(`\`${item.name}\` ⚔ ${item.damage}`)
+            fields.push(`\`${item.name}\` ⚔ ${item.damage} :tools: ${inventory.condition} %`)
             break
           default:
             fields.push(`${item.name}`)
           }
-        })
+        }))
         messageEmbed.addField('Equipments', fields.join('\n'), true)
       }
     

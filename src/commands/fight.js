@@ -1,6 +1,9 @@
 const User = require('../models/user')
 
-const { getUserEquipedItem, random, throwDice, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
+const { 
+  getUserEquipedItem, random, throwDice, 
+  triggerEvent,
+  decrementEquipedItemsCondition } = require('../utils')
 
 module.exports = {
   name: 'fight',
@@ -54,6 +57,9 @@ module.exports = {
           messages = [...messages, ...results]
         }
       }
+
+      await decrementEquipedItemsCondition(leader.id)    
+      await decrementEquipedItemsCondition(opponent.id)
 
       // Send all messages at the end
       messages.map(m => { message.channel.send(m) })
@@ -117,8 +123,6 @@ async function attack(leader, opponent) {
       await leader.update({ experience: leader.experience + randomExperience })
       messages.push(`🎁 **${leader.username}** got **${randomExperience} XP** !`)
     }
-  } else {
-    // messages.push(`☠ **${leader.username}** is dead !`)
   }
   return messages
 }

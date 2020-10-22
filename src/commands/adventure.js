@@ -3,7 +3,14 @@ const Environment = require('../models/environment')
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
 
-const { heal, savingThrow, getUserEquipedItem, random, throwDice, initializeMonster, giveXP, triggerEvent, getLevelByExperience } = require('../utils')
+const { 
+  heal, 
+  savingThrow, 
+  getUserEquipedItem, 
+  random, throwDice, 
+  initializeMonster, giveXP, 
+  triggerEvent, getLevelByExperience, 
+  decrementEquipedItemsCondition } = require('../utils')
 
 module.exports = {
   name: 'adventure',
@@ -77,7 +84,9 @@ module.exports = {
             messages = [...messages, ...results.messages]
             
             let user = await User.findByPk(currentPlayer.id)
-            if(user.currentHitPoint <= 0) { 
+           
+            if(user.currentHitPoint <= 0) {
+              await decrementEquipedItemsCondition(user.id) 
               players.splice(index, 1)
             }
 
@@ -91,6 +100,7 @@ module.exports = {
               messages = [...messages, ...results.messages]
             
               let user = await User.findByPk(player.id)
+              await decrementEquipedItemsCondition(user.id)
               let randomCoins = random(0, 10 * getLevelByExperience(user.experience).level)
               await user.update({ coins: user.coins + randomCoins })
               messages.push(`🏆 **${user.username}** got **${monster.challenge} XP** & **${randomCoins}** 🪙 !`)

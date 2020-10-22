@@ -12,6 +12,11 @@ const Inventory = sequelize.define('inventory', {
     allowNull: false,
     defaultValue: 1
   },
+  condition: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 100
+  },
 })
 
 module.exports = Inventory

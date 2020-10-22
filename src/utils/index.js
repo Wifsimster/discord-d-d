@@ -175,7 +175,27 @@ async function determineValue(itemId) {
   return cost
 }
 
+async function decrementEquipedItemsCondition(userId) {
+  let userWeapon = await getUserEquipedItem(userId, 'weapon')
+  if(userWeapon) {
+    let userIventoryWeapon = await Inventory.findOne({ where: { userId: userId, itemId: userWeapon.id }})
+    await userIventoryWeapon.decrement('condition', { by: userWeapon.deteriorationRate })
+  }
+      
+  let userArmor = await getUserEquipedItem(userId, 'armor')
+  if(userArmor) {
+    let userIventoryArmor = await Inventory.findOne({ where: { userId: userId, itemId: userArmor.id }})
+    await userIventoryArmor.decrement('condition', { by: userArmor.deteriorationRate })
+  }
+
+  let userShield = await getUserEquipedItem(userId, 'shield')
+  if(userShield) {
+    let userIventoryShield = await Inventory.findOne({ where: { userId: userId, itemId: userShield.id }})
+    await userIventoryShield.decrement('condition', { by: userShield.deteriorationRate }) 
+  }
+}
+
 module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent,
-  determineValue
+  determineValue, decrementEquipedItemsCondition
 }
