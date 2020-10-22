@@ -10,7 +10,7 @@ const {
   random, throwDice, 
   initializeMonster, giveXP, 
   determineWeaponDamage,
-  triggerEvent, getLevelByExperience, 
+  triggerEvent, 
   decrementEquipedItemsCondition, 
   getUserItemCondition,
   determineArmorValue} = require('../utils')
@@ -104,7 +104,7 @@ module.exports = {
             
               let user = await User.findByPk(player.id)
               await decrementEquipedItemsCondition(user.id)
-              let randomCoins = random(0, 10 * getLevelByExperience(user.experience).level)
+              let randomCoins = random(0, 10 * user.level)
               await user.update({ coins: user.coins + randomCoins })
               messages.push(`🏆 **${user.username}** got **${monster.challenge} XP** & **${randomCoins}** 🪙 !`)
             }))        

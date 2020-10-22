@@ -15,7 +15,12 @@ module.exports = {
     }
     
     if(args[1]) {
-      page = args[1]
+      page = Number(args[1])
+    }
+
+    if(isNaN(page)) {
+      message.channel.send(`**${message.author.username}** \`${args[1]}\` need to be a number !`)
+      return
     }
 
     let count = await Item.count({ where: { objectType: type } })

@@ -15,7 +15,7 @@ module.exports = {
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
         { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`' },
         { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `buy`, `repair`' },
-        { name: 'Items', value: '`item' },
+        { name: 'Items', value: '`item`' },
         { name: 'Interactions', value: '`steal`, `charity`, `prostitute`' },
         { name: 'Utilities', value: '`wololo`, `alive`' }
       )    

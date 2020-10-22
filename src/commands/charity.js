@@ -14,7 +14,7 @@ module.exports = {
       message.channel.send(`**${user.username}** someone give you ${randomValue} 🪙`)
       await user.increment('coins', { by: randomValue })
     } else {
-      message.channel.send(`**${user.username}** nobody gives a fuck about you !`)
+      message.channel.send(`**${user.username}**, nobody gives a fuck about you !`)
     }    
   }
 }

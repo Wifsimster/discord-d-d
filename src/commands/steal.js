@@ -8,7 +8,7 @@ module.exports = {
     let user = await User.findByPk(message.author.id)
     let randomValue = throwDice() + throwDice()
 
-    message.channel.send(`**${user.username}** tried to stole somone on the sidewalk...`)
+    message.channel.send(`**${user.username}** tried to stole someone on the sidewalk...`)
 
     if(triggerEvent()) {
       message.channel.send(`**${user.username}** stole ${randomValue} 🪙`)

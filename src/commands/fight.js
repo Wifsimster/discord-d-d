@@ -36,12 +36,12 @@ module.exports = {
       let opponentWeapon = await getUserEquipedItem(opponent.id, 'weapon')
 
       if(!opponentWeapon) {
-        message.channel.send(`**${opponentWeapon.username}** you don't have equiped a weapon !`)
+        message.channel.send(`**${opponent.username}** doesn't have equiped a weapon !`)
         return
       }
 
       if(getUserItemCondition(opponent.id, opponentWeapon.id) === 0) {
-        message.channel.send(`**${opponent.username}** your weapon is broken, fix it !`)
+        message.channel.send(`**${opponent.username}** have a broken weapon, he need to fixed it !`)
         return
       }
 

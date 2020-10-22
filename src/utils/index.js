@@ -26,28 +26,60 @@ function randomDamage(user) {
   return 0
 }
 
-function getLevelByExperience(xp) {
-  if(xp >= 0 && xp < 1000) { return { level: 1, min: 0, max: 1000 } }
-  if(xp >= 1000 && xp < 3000) { return { level: 2, min: 1000, max: 3000 } }
-  if(xp >= 3000 && xp < 6000) { return { level: 3, min: 3000, max: 6000 } }
-  if(xp >= 6000 && xp < 10000) { return { level: 4, min: 6000, max: 10000 } }
-  if(xp >= 1000 && xp < 15000) { return { level: 5, min: 1000, max: 15000 } }
-  if(xp >= 15000 && xp < 21000) { return { level: 6, min: 15000, max: 21000 } }
-  if(xp >= 21000 && xp < 28000) { return { level: 7, min: 21000, max: 28000 } }
-  if(xp >= 28000 && xp < 36000) { return { level: 8, min: 28000, max: 36000 } }
-  if(xp >= 36000 && xp < 45000) { return { level: 9, min: 36000, max: 45000 } }
-  if(xp >= 45000 && xp < 55000) { return { level: 10, min: 45000, max: 55000 } }
-  if(xp >= 55000 && xp < 66000) { return { level: 11, min: 55000, max: 66000 } }
-  if(xp >= 66000 && xp < 78000) { return { level: 12, min: 66000, max: 78000 } }
-  if(xp >= 78000 && xp < 91000) { return { level: 13, min: 78000, max: 91000 } }
-  if(xp >= 91000 && xp < 105000) { return { level: 14, min: 91000, max: 105000 } }
-  if(xp >= 105000 && xp < 120000) { return { level: 15, min: 105000, max: 120000 } }
-  if(xp >= 120000 && xp < 136000) { return { level: 16, min: 120000, max: 136000 } }
-  if(xp >= 136000 && xp < 153000) { return { level: 17, min: 136000, max: 153000 } }
-  if(xp >= 153000 && xp < 171000) { return { level: 18, min: 153000, max: 171000 } }
-  if(xp >= 171000 && xp < 190000) { return { level: 19, min: 171000, max: 190000 } }
-  if(xp >= 190000) { return { level: 20, min: 190000 } }
+function getUserLevel(level, xp) {
+  if(level === 1 && xp >= 1000) { return 2 }
+  if(level === 2 && xp >= 3000) { return 3 }
+  if(level === 3 && xp >= 6000) { return 4 }
+  if(level === 4 && xp >= 10000) { return 5 }
+  if(level === 5 && xp >= 15000) { return 6 }
+  if(level === 6 && xp >= 21000) { return 7 }
+  if(level === 7 && xp >= 28000) { return 8 }
+  if(level === 8 && xp >= 36000) { return 9 }
+  if(level === 9 && xp >= 45000) { return 10 }
+  if(level === 10 && xp >= 55000) { return 11 }
+  if(level === 11 && xp >= 66000) { return 12 }
+  if(level === 12 && xp >= 78000) { return 13 }
+  if(level === 13 && xp >= 91000) { return 14 }
+  if(level === 14 && xp >= 105000) { return 15 }
+  if(level === 15 && xp >= 120000) { return 16 }
+  if(level === 16 && xp >= 136000) { return 17 }
+  if(level === 17 && xp >= 153000) { return 18 }
+  if(level === 18 && xp >= 171000) { return 19 }
+  if(level === 19 && xp >= 190000) { return 20 }
+  if(level === 20) { return 20 }
 }
+
+function getMaxExperience(level) {
+  if(level === 1) { return 1000 }
+  if(level === 2) { return 3000 }
+  if(level === 3) { return 6000 }
+  if(level === 4) { return 10000 }
+  if(level === 5) { return 15000 }
+  if(level === 6) { return 21000 }
+  if(level === 7) { return 28000 }
+  if(level === 8) { return 36000 }
+  if(level === 9) { return 45000 }
+  if(level === 10) { return 55000 }
+  if(level === 11) { return 66000 }
+  if(level === 12) { return 78000 }
+  if(level === 13) { return 91000 }
+  if(level === 14) { return 105000 }
+  if(level === 15) { return 120000 }
+  if(level === 16) { return 136000 }
+  if(level === 17) { return 153000 }
+  if(level === 18) { return 171000 }
+  if(level === 19) { return 190000 }
+  if(level === 20) { return Infinity }
+}
+
+// async function determineUserLevel(userId) {
+//   let user = await User.findByPk(userId) 
+//   if(user) {
+//     let level = getLevelByExperience(user.level, user.experience)
+//     await user.update({ level: level })
+//   }
+//   return null
+// }
 
 async function initializeMonster(environmentId) {
   let monsters = await Monster.findAll({ where: { challengeRange: { [Op.between]: [0, 1] }, environmentId: environmentId }})
@@ -60,25 +92,32 @@ async function initializeMonster(environmentId) {
   return null
 }
 
-async function levelUp(user) {
-  let currentLevel = getLevelByExperience(user.experience)
-  if([4, 6, 8, 12, 14, 16, 19].includes(currentLevel.level + 1)) {
-    // TODO : User can gain +2 aptitudes point
+async function levelUp(userId) {
+  let user = await User.findByPk(userId)
+  let nextLevel = getUserLevel(user.level, user.experience)
+
+  if(nextLevel > user.level) {
+    if([4, 6, 8, 12, 14, 16, 19].includes(nextLevel)) {
+      // TODO : User can gain +2 aptitudes point
+    }
+
+    let hp = user.maxHitPoint + user.hitPointAugmentation
+    await user.increment('level', { by: 1 })
+    return await user.update({ experience: 0, maxHitPoint: hp, currentHitPoint: hp })
   }
 
-  let hp = user.maxHitPoint + user.hitPointAugmentation
-  return await user.update({ maxHitPoint: hp, currentHitPoint: hp })
+  return false
 }
 
 async function giveXP(player, monster) {
-  let user = await User.findByPk(player.id)
-  let currentLevel = getLevelByExperience(user.experience)
   let messages = []
-  if(user.experience + monster.challenge > currentLevel.max) {
-    await levelUp(user)
+  let user = await User.findByPk(player.id)
+  
+  if(await levelUp(user.id)) {
     messages.push(`🍾 **${player.username}** leved up ! (+ ❤ ${user.hitPointAugmentation})`)
+  } else {
+    await user.increment('experience', { by: monster.challenge })
   }
-  await user.increment('experience', { by: monster.challenge })
   return { messages: messages }
 }
 
@@ -238,7 +277,7 @@ async function determineArmorValue(userId, type = 'armor') {
   return 0
 }
 
-module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
-  random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent,
+module.exports = { heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
+  random, throwDice, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent,
   determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue
 }

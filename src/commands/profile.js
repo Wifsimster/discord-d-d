@@ -1,12 +1,11 @@
 const Discord = require('discord.js')
-const { getLevelByExperience } = require('../utils')
+const { getUserLevel, getMaxExperience } = require('../utils')
 
 const User = require('../models/user')
 const Race = require('../models/race')
 const Class = require('../models/class')
 const Inventory = require('../models/inventory')
 const Item = require('../models/item')
-const inventory = require('./inventory')
 
 module.exports = {
   name: 'profile',
@@ -25,7 +24,6 @@ module.exports = {
     let user = await User.findByPk(target.id, { include: Inventory })
 
     if(user) {
-      let level = getLevelByExperience(user.experience)
       let race = await Race.findByPk(user.raceId)
       let classe = await Class.findByPk(user.classId)
 
@@ -43,8 +41,8 @@ module.exports = {
         .setTitle(`${race.name} ${classe.name}`)
         .setThumbnail(target.displayAvatarURL())
         .addFields(
-          { name: 'Level', value: `${level.level} (${((user.experience - level.min)/level.max * 100).toFixed(1)}%)`, inline: true },
-          { name: 'XP', value: `${user.experience}/${level.max}`, inline: true },
+          { name: 'Level', value: `${user.level} (${(user.experience/getMaxExperience(user.level)).toFixed(1)}%)`, inline: true },
+          { name: 'XP', value: `${user.experience}/${getMaxExperience(user.level)}`, inline: true },
           { name: 'HP', value: `${user.currentHitPoint < 0 ? 0 : user.currentHitPoint}/${user.maxHitPoint}`, inline: true }
         )
         .addFields(

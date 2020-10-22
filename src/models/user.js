@@ -65,6 +65,11 @@ const User = sequelize.define('user', {
     defaultValue: 0,
     allowNull: false,
   },
+  level: {
+    type: Sequelize.INTEGER,
+    defaultValue: 1,
+    allowNull: false,
+  },
 
   // Wealth
   coins: {
