@@ -13,9 +13,10 @@ module.exports = {
       .setDescription('Add `beta` before any command')
       .addFields(
         { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
-        { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`, `alive`' },
+        { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`' },
         { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `buy`, `item`' },
-        { name: 'Interactions', value: '`steal`, `charity`, `prostitute`' }
+        { name: 'Interactions', value: '`steal`, `charity`, `prostitute`' },
+        { name: 'Utilities', value: '`wololo`, `alive`' }
       )    
     message.channel.send(messageEmbed)
   }
