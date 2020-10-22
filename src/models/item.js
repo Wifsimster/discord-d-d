@@ -35,16 +35,27 @@ const Item = sequelize.define('item', {
     type: Sequelize.INTEGER,
     defaultValue: 0
   },
+  // Generic value
   value: {
     type: Sequelize.INTEGER,
     defaultValue: 0
   },
-  damageType: Sequelize.STRING,  
+  condition: {
+    type: Sequelize.INTEGER,
+    defaultValue: 100
+  },
+  deteriorationRate: {
+    type: Sequelize.INTEGER,
+    defaultValue: 1
+  },
   equiped: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
     defaultValue: false
   },
+
+  // Weapon properties
+  damageType: Sequelize.STRING,  
   twoHanded: {
     type: Sequelize.BOOLEAN,
     allowNull: false,

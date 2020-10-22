@@ -1,5 +1,5 @@
 const User = require('../models/user')
-const { getItem, throwDice } = require('../utils')
+const { getItem, throwDice, determineValue } = require('../utils')
 const Inventory = require('../models/inventory')
 
 module.exports = {
@@ -8,16 +8,16 @@ module.exports = {
     let messages = []
     let user = await User.findByPk(message.author.id)
     let item = await getItem(args[0])
-    let cost = args[1] || item.cost
+    let cost = args[1] || await determineValue(item.id)
 
     if(user) {
       if(item) {
         let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id, equiped: 0 }})
 
         if(inventory) {
-          messages.push(`:moneybag: **${user.username}** put his \`${item.name}\` for sale at ${cost} 🪙 (shop ${item.cost} 🪙)`)          
+          messages.push(`:moneybag: **${user.username}** put his \`${item.name}\` for sale at ${cost} 🪙 (shop ${await determineValue(item.id)} 🪙)`)
 
-          if(cost > item.cost) {
+          if(cost > await determineValue(item.id)) {
             messages.push(`:moneybag: **${user.username}** tries to convince the merchant with his charisma (${user.charisma})...`)
             
             if(throwDice(user.charisma) / user.charisma > 0.9) {

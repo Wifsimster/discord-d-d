@@ -166,6 +166,16 @@ async function heal(userId) {
   return { messages }
 }
 
+async function determineValue(itemId) {
+  let item = await Item.findByPk(itemId)
+  let cost = 0
+  if(item.condition > 0) {
+    cost = (item.cost / (1 + (100 / item.condition))).toFixed(1)
+  }
+  return cost
+}
+
 module.exports = { heal, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
-  random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent 
+  random, throwDice, randomDamage, getLevelByExperience, initializeMonster, levelUp, giveXP, triggerEvent,
+  determineValue
 }
