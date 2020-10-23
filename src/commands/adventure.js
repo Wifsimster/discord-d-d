@@ -150,7 +150,7 @@ async function attackMonster(player, monster) {
         await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
         let randomMessages = [
           `⚔ **${user.username}** slides on a big :shit: and hit his head, loosing - ${diceValue} ❤ !`,
-          `⚔ **${user.username}** hit himself with his **${weapon.name}**, loosing - ${diceValue} ❤ !`,
+          `⚔ **${user.username}** hit himself with his \`${weapon.name}\`, loosing - ${diceValue} ❤ !`,
           `:mouse_trap:  **${user.username}** walk on a trap and loose - ${diceValue} ❤ !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
@@ -163,7 +163,7 @@ async function attackMonster(player, monster) {
 
         switch(randomValue) {
         case 20:          
-          messages.push(`⚔ **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 ${firstDamageDice + secondDamageDice})`)
+          messages.push(`⚔ **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => - 🗡 ${firstDamageDice + secondDamageDice})`)
           monster.currentHitPoint = monster.currentHitPoint - (firstDamageDice + secondDamageDice)
           break
         case 1:

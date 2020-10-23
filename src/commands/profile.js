@@ -71,10 +71,14 @@ module.exports = {
             fields.push(`\`${item.name}\` 🛡 ${item.armorClass} :tools: ${inventory.condition} %`)
             break
           case 'weapon':
-            fields.push(`\`${item.name}\` ⚔ ${item.damage} :tools: ${inventory.condition} %`)
+            fields.push(`\`${item.name}\` ⚔ ${item.damage} :tools: ${inventory.condition} % ${item.twoHanded ? '(Two Handed)' : '' }`)
             break
           default:
-            fields.push(`${item.name}`)
+            if(item.name === 'Torch') {
+              fields.push(`\`${item.name}\` :fire:`)
+            } else {
+              fields.push(`\`${item.name}\``)
+            }
           }
         }))
         messageEmbed.addField('Equipments', fields.join('\n'), true)

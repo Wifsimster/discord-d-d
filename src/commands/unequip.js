@@ -14,7 +14,7 @@ module.exports = {
       let item = await getItem(args[0])
 
       if(item) {
-        let inventory = await Inventory.findOne( { where: { itemId: item.id } })
+        let inventory = await Inventory.findOne( { where: { userId: author.id, itemId: item.id } })
         if(inventory) {
           await inventory.update({ equiped: false })
           message.channel.send(`${author.username} unequiped his \`${item.name}\` !`)

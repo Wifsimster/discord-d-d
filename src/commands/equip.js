@@ -1,6 +1,6 @@
 const Inventory = require('../models/inventory')
 const Item = require('../models/item')
-const { getItem } = require('../utils')
+const { getItem, getUserEquipedItem } = require('../utils')
 
 module.exports = {
   name: 'equip',
@@ -26,13 +26,21 @@ module.exports = {
             }
           }))
 
+          if(item.twoHanded) {
+            let shield = await getUserEquipedItem(userId, 'shield')
+            if(shield) {
+              let inventoryShield = await Inventory.findOne({ where: { userId: userId, itemId: shield.id }})
+              await inventoryShield.update({ equiped: false })
+            }
+          }
+
           await inventory.update({ equiped: true })
           message.channel.send(`${author.username} equiped his \`${item.name}\` !`)
         } else {
           message.channel.send(`${author.username} you don't have this item ${item.name} !`)
         }        
       } else {
-        message.channel.send(`${author.username} no item is called ${args[0]} !`)
+        message.channel.send(`${author.username} no item is called \`${args[0]}\` !`)
       }
     } else {
       message.channel.send(`${author.username} you need to add the name of the item !`)

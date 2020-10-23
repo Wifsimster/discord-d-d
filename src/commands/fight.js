@@ -46,7 +46,7 @@ module.exports = {
       }
 
       if(opponent.currentHitPoint < opponent.maxHitPoint) {
-        message.channel.send(`**${opponent.username}** is not full life !`)
+        message.channel.send(`**' ${opponent.username}** is not full life !`)
         return
       }
 
@@ -59,7 +59,7 @@ module.exports = {
       let opponentWeaponDamage = await determineWeaponDamage(opponent.id)
 
       let messages = []
-      messages.push(`⚔ **${leader.username}** (❤ ${leader.currentHitPoint}/${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.currentHitPoint}/${opponent.maxHitPoint})`)
+      messages.push(`⚔ **${leader.username}** (❤ ${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.maxHitPoint})`)
       messages.push(`⚔ **${leader.username}** with his \`${leaderWeapon.name}\` (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his \`${opponentWeapon.name}\` (🗡 ${opponentWeaponDamage})`)
 
       if(opponent.currentHitPoint <= 0) {
@@ -93,6 +93,8 @@ module.exports = {
 
       await leader.update({ currentHitPoint: leader.maxHitPoint})
       await opponent.update({ currentHitPoint: opponent.maxHitPoint})
+
+      messages.push(':man_mage: Bot healed both of you !')
 
       // Send all messages at the end
       messages.map(m => { message.channel.send(m) })
