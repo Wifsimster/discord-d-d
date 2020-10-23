@@ -1,3 +1,4 @@
+const Ability = require('../models/ability')
 const Monster = require('../models/monster')
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
@@ -95,17 +96,40 @@ async function initializeMonster(environmentId) {
 async function levelUp(userId) {
   let user = await User.findByPk(userId)
   let nextLevel = getUserLevel(user.level, user.experience)
-
+  
   if(nextLevel > user.level) {
-    if([4, 6, 8, 12, 14, 16, 19].includes(nextLevel)) {
-      // TODO : User can gain +2 aptitudes point
-    }
-
-    let hp = user.maxHitPoint + user.hitPointAugmentation
     await user.increment('level', { by: 1 })
-    return await user.update({ experience: 0, maxHitPoint: hp, currentHitPoint: hp })
-  }
+    let hp = user.maxHitPoint + user.hitPointAugmentation
+    await user.update({ experience: 0, maxHitPoint: hp, currentHitPoint: hp })
+    let message = `🍾 **${user.username}** level up (+ ${user.hitPointAugmentation} :heart:`
 
+    if([4, 6, 8, 12, 14, 16, 19].includes(nextLevel)) {
+      let abilities = await Ability.findAll()
+      let firstAbility = abilities[random(0, abilities.length - 1)]
+      let secondAbility = abilities[random(0, abilities.length - 1)]
+
+      if(firstAbility.name === secondAbility.name) {
+        await user.increment(firstAbility.name, { by : 2 })
+        message += `, +2 ${firstAbility.name} ) !`
+        
+        if(firstAbility.name === 'Constitution') {
+          await user.increment('maxHitPoint', { by: 2 })
+        }
+      } else {
+        await user.increment(firstAbility.name, { by : 1 })
+        await user.increment(secondAbility.name, { by : 1 })
+        message += `, +1 ${firstAbility.name}, +1 ${secondAbility.name}) !`
+        
+        if(firstAbility.name === 'Constitution') {
+          await user.increment('maxHitPoint', { by: 1 })
+        }
+      }
+
+    } else {
+      message += ') !'
+    }
+    return message
+  }
   return false
 }
 
@@ -113,8 +137,10 @@ async function giveXP(player, monster) {
   let messages = []
   let user = await User.findByPk(player.id)
   
-  if(await levelUp(user.id)) {
-    messages.push(`🍾 **${player.username}** leved up ! (+ ❤ ${user.hitPointAugmentation})`)
+  let message = await levelUp(user.id)
+
+  if(message) {
+    messages.push(message)
   } else {
     await user.increment('experience', { by: monster.challenge })
   }
