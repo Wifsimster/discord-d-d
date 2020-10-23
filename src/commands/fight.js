@@ -1,7 +1,7 @@
 const User = require('../models/user')
 
 const { 
-  getUserEquipedItem, random, throwDice, 
+  getUserEquipedItem, random, throwDie, 
   triggerEvent, determineWeaponDamage,
   decrementEquipedItemsCondition, 
   getUserItemCondition, levelUp,
@@ -119,16 +119,16 @@ async function attack(leader, opponent) {
     }
      
     let leaderWeaponDamage = await determineWeaponDamage(leader.id)
-    let randomValue = throwDice()
+    let randomValue = throwDie()
     let opponentArmorClass = await determineArmorValue(opponent.id, 'armor') + await determineArmorValue(opponent.id, 'shield')
     let armorDamage = opponentArmorClass - randomValue
-    let firstDamageDice = Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
-    let secondDamageDice =  Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
+    let firstDamageDie = Math.round(throwDie(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
+    let secondDamageDie =  Math.round(throwDie(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
 
     switch(randomValue) {
     case 20:          
-      messages.push(`⚔ **${leader.username}** made a critical hit with his **${leaderWeapon.name}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => 🗡 -${firstDamageDice + secondDamageDice})`)
-      opponent.currentHitPoint = opponent.currentHitPoint - (firstDamageDice + secondDamageDice)
+      messages.push(`⚔ **${leader.username}** made a critical hit with his **${leaderWeapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => 🗡 -${firstDamageDie + secondDamageDie})`)
+      opponent.currentHitPoint = opponent.currentHitPoint - (firstDamageDie + secondDamageDie)
       break
     case 1:
       messages.push(`⚔ **${leader.username}** missed **${opponent.username}** ! (:game_die: ${randomValue})`)
@@ -136,7 +136,7 @@ async function attack(leader, opponent) {
     default:
       if(armorDamage < 0 ) {
         messages.push(`⚔ **${leader.username}** hit **${opponent.username}** (🛡 ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
-        opponent.currentHitPoint = opponent.currentHitPoint - firstDamageDice
+        opponent.currentHitPoint = opponent.currentHitPoint - firstDamageDie
       } else {
         messages.push(`⚔ **${leader.username}** hit **${opponent.username}** but his armor prevent any damage ! (🛡 ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 0)`)
       }

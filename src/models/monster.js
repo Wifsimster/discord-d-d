@@ -32,7 +32,7 @@ const Monster = sequelize.define('monster', {
     defaultValue: 10,
     allowNull: false,
   },
-  dice: {
+  die: {
     type: Sequelize.INTEGER,
     defaultValue: 10,
     allowNull: false,

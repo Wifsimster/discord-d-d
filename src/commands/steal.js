@@ -1,13 +1,13 @@
 const User = require('../models/user')
-const { throwDice } = require('../utils')
+const { throwDie } = require('../utils')
 
 module.exports = {
   name: 'steal',
   cooldown: 60,
   async execute(message) {
     let user = await User.findByPk(message.author.id)
-    let randomCoins = throwDice() + throwDice()
-    let randomDexterity = throwDice(user.charisma)
+    let randomCoins = throwDie() + throwDie()
+    let randomDexterity = throwDie(user.charisma)
 
     message.channel.send(`**${user.username}** tried to stole someone on the sidewalk... (Dexterity ${user.dexterity})`)
 
@@ -15,7 +15,7 @@ module.exports = {
       message.channel.send(`**${user.username}** stole ${randomCoins} 🪙 (${randomDexterity} :game_die:)`)
       await user.increment('coins', { by: randomCoins })
     } else {
-      let randomValue = throwDice(6)
+      let randomValue = throwDie(6)
       await user.update({ currentHitPoint: user.currentHitPoint - randomValue < 0 ? 0 : user.currentHitPoint - randomValue })
       message.channel.send(`**${user.username}** the person caught you, you loose - ${randomValue} ❤ ! (${randomDexterity} :game_die:)`)
     }    

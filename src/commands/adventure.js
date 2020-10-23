@@ -7,7 +7,7 @@ const {
   heal, 
   savingThrow, 
   getUserEquipedItem, 
-  random, throwDice, 
+  random, throwDie, 
   initializeMonster, giveXP, 
   determineWeaponDamage,
   triggerEvent, 
@@ -146,25 +146,25 @@ async function attackMonster(player, monster) {
 
       // Random event
       if(triggerEvent()) {
-        let diceValue = throwDice(user.hitDie)
-        await user.update({ currentHitPoint: user.currentHitPoint - diceValue })        
+        let dieValue = throwDie(user.hitDie)
+        await user.update({ currentHitPoint: user.currentHitPoint - dieValue })        
         let randomMessages = [
-          `⚔ **${user.username}** slides on a big :shit: and hit his head, loosing - ${diceValue} ❤ !`,
-          `⚔ **${user.username}** hit himself with his \`${weapon.name}\`, loosing - ${diceValue} ❤ !`,
-          `:mouse_trap:  **${user.username}** walk on a trap and loose - ${diceValue} ❤ !`
+          `⚔ **${user.username}** slides on a big :shit: and hit his head, loosing - ${dieValue} ❤ !`,
+          `⚔ **${user.username}** hit himself with his \`${weapon.name}\`, loosing - ${dieValue} ❤ !`,
+          `:mouse_trap:  **${user.username}** walk on a trap and loose - ${dieValue} ❤ !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
         let weaponDamage = await determineWeaponDamage(user.id)
-        let randomValue = throwDice()
+        let randomValue = throwDie()
         let armorDamage = monster.armorClass - randomValue
-        let firstDamageDice = Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
-        let secondDamageDice =  Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
+        let firstDamageDie = Math.round(throwDie(user.hitDie) * weaponDamage / user.hitDie)
+        let secondDamageDie =  Math.round(throwDie(user.hitDie) * weaponDamage / user.hitDie)
 
         switch(randomValue) {
         case 20:          
-          messages.push(`⚔ **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => - 🗡 ${firstDamageDice + secondDamageDice})`)
-          monster.currentHitPoint = monster.currentHitPoint - (firstDamageDice + secondDamageDice)
+          messages.push(`⚔ **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
+          monster.currentHitPoint = monster.currentHitPoint - (firstDamageDie + secondDamageDie)
           break
         case 1:
           messages.push(`⚔ **${user.username}** missed the **${monster.name}** ! (:game_die: ${randomValue})`)
@@ -172,7 +172,7 @@ async function attackMonster(player, monster) {
         default :
           if(armorDamage < 0 ) {
             messages.push(`⚔ **${user.username}** hit the **${monster.name}** (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
-            monster.currentHitPoint = monster.currentHitPoint - firstDamageDice
+            monster.currentHitPoint = monster.currentHitPoint - firstDamageDie
           } else {
             messages.push(`⚔ **${user.username}** hit the **${monster.name}** but his armor prevent any damage ! (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 0)`)
           }
@@ -207,16 +207,16 @@ async function attackPlayer(player, monster) {
     let userCurrentHitPoint = user.currentHitPoint
 
     if(monster.currentHitPoint > 0) {
-      let randomValue = throwDice()
+      let randomValue = throwDie()
       let armorClass = await determineArmorValue(user.id, 'armor') + await determineArmorValue(user.id, 'shield')
       let armorDamage = armorClass - randomValue
-      let firstDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
-      let secondDamageDice = Math.round(throwDice(monster.dice) * monster.strength / monster.dice)
+      let firstDamageDie = Math.round(throwDie(monster.die) * monster.strength / monster.die)
+      let secondDamageDie = Math.round(throwDie(monster.die) * monster.strength / monster.die)
 
       switch(randomValue) {
       case 20:          
-        messages.push(`⚔ **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDice} + :game_die: ${secondDamageDice} => - 🗡 ${firstDamageDice + secondDamageDice})`)
-        userCurrentHitPoint = userCurrentHitPoint - (firstDamageDice + secondDamageDice)
+        messages.push(`⚔ **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
+        userCurrentHitPoint = userCurrentHitPoint - (firstDamageDie + secondDamageDie)
         break
       case 1:
         messages.push(`⚔ **${monster.name}** missed **${user.username}** ! (:game_die: ${randomValue})`)
@@ -225,7 +225,7 @@ async function attackPlayer(player, monster) {
         if(armorDamage < 0 ) {
           messages.push(`⚔ **${monster.name}** hit **${user.username}** (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
           
-          let potentialUserCurrentHitPoint = userCurrentHitPoint - firstDamageDice
+          let potentialUserCurrentHitPoint = userCurrentHitPoint - firstDamageDie
 
           if(potentialUserCurrentHitPoint <= 0) {
             if(random(0, 1) === 0) {

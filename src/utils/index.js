@@ -9,12 +9,20 @@ function random(min, max) {
   return Math.round(min + Math.random() * (max - min))
 }
 
-function throwDice(dice = 20) {
-  return Math.floor((Math.random() * dice) + 1)
+function throwDie(die = 20) {
+  return Math.floor((Math.random() * die) + 1)
+}
+
+function multipleThrowDie(number, die = 20) {
+  let result = 0
+  for(let i = 0; i < number; i++) {
+    result += throwDie(die)
+  }
+  return result
 }
 
 function triggerEvent() {
-  return throwDice() === throwDice()
+  return throwDie() === throwDie()
 }
 
 // const ATTACK_MATRIX_01 = [...Array(20).keys()]
@@ -22,7 +30,7 @@ function triggerEvent() {
 function randomDamage(user) {
   if(user) {
     // return Math.round(ATTACK_MATRIX_01[user.hitDie - 1] * user.strength)
-    return { dice: throwDice(user.hitDie), strength: user.strength }
+    return { die: throwDie(user.hitDie), strength: user.strength }
   }
   return 0
 }
@@ -86,7 +94,7 @@ async function initializeMonster(environmentId) {
   let monsters = await Monster.findAll({ where: { challengeRange: { [Op.between]: [0, 1] }, environmentId: environmentId }})
   let monster = monsters[random(0, monsters.length - 1)]
   if(monster) {
-    monster.maxHitPoint = throwDice(monster.dice) + monster.constitution
+    monster.maxHitPoint = throwDie(monster.die) + monster.constitution
     monster.currentHitPoint = monster.maxHitPoint
     return monster
   }
@@ -195,7 +203,7 @@ async function getItem(name) {
 async function savingThrow(userId) {
   let messages = []
   let user = await User.findByPk(userId)
-  let randomValue = throwDice()
+  let randomValue = throwDie()
   let abilityScore = Math.max(...[user.strength, user.dexterity, user.constitution, user.intelligence, user.wisdom, user.charisma])
   
   if(randomValue >= abilityScore) {
@@ -216,8 +224,8 @@ async function heal(userId) {
     let inventoryPotion = await getPotionFromUser(user.id)
     
     if(inventoryPotion && inventoryPotion.quantity > 0) {
-      let firstThrowValue = throwDice(4)
-      let secondThrowValue = throwDice(4)
+      let firstThrowValue = throwDie(4)
+      let secondThrowValue = throwDie(4)
       let randomHitPoint = firstThrowValue + secondThrowValue + 2
       let toHeal = user.maxHitPoint - user.currentHitPoint
       if(randomHitPoint > toHeal) {
@@ -302,6 +310,6 @@ async function determineArmorValue(userId, type = 'armor') {
 }
 
 module.exports = { heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
-  random, throwDice, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent,
+  random, throwDie, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent, multipleThrowDie,
   determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue
 }

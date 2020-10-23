@@ -6,6 +6,7 @@ const Race = require('./race')
 const User = require('./user')
 const Item = require('./item')
 const Inventory = require('./inventory')
+const Quest = require('./quest')
 
 Monster.belongsTo(Environment)
 Environment.hasMany(Monster)
@@ -24,3 +25,9 @@ Item.hasMany(Inventory)
 
 Inventory.belongsTo(User)
 User.hasMany(Inventory)
+
+Quest.belongsTo(User)
+User.hasMany(Quest)
+
+Quest.belongsTo(Monster)
+Monster.hasMany(Quest)

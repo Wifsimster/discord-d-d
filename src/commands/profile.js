@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { getUserLevel, getMaxExperience } = require('../utils')
+const { getMaxExperience } = require('../utils')
 
 const User = require('../models/user')
 const Race = require('../models/race')

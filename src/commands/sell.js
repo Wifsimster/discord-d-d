@@ -1,5 +1,5 @@
 const User = require('../models/user')
-const { getItem, throwDice, determineValue } = require('../utils')
+const { getItem, throwDie, determineValue } = require('../utils')
 const Inventory = require('../models/inventory')
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
           if(cost > await determineValue(item.id)) {
             messages.push(`:moneybag: **${user.username}** tries to convince the merchant with his charisma (${user.charisma})...`)
             
-            if(throwDice(user.charisma) / user.charisma > 0.9) {
+            if(throwDie(user.charisma) / user.charisma > 0.9) {
               await user.increment('coins', { by: cost })
               messages.push(`:moneybag: **${user.username}** sell it for ${cost} 🪙 !`)
 
