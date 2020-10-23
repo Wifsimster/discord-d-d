@@ -14,12 +14,12 @@ const {
   decrementEquipedItemsCondition, 
   getUserItemCondition,
   determineArmorValue} = require('../utils')
+const Quest = require('../models/quest')
 
 module.exports = {
   name: 'adventure',
   description: 'Adventure',
   aliases: ['adv'],
-  usage: '[commande name]',
   cooldown: 5,
   async execute(message) {
     let mentions = message.mentions.users.array()
@@ -33,7 +33,7 @@ module.exports = {
 
       // Keep user with character & life
       await Promise.all(mentions.map(async mention => {
-        let user = await User.findByPk(mention.id)
+        let user = await User.findByPk(mention.id, { include: [{ model: Inventory, where: { equiped: true }, include: [{ model: Item }] }]})
         if(user && user.currentHitPoint > 0 && user.username !== leader.username) {
           players.push(mention) 
         }
@@ -180,6 +180,20 @@ async function attackMonster(player, monster) {
     
         if(monster.currentHitPoint <= 0) {
           messages.push(`🎺 **${user.username}** killed the **${monster.name}** !`)
+
+          // Update user quest
+          let quest = await Quest.findOne({ where: { userId: user.id }})
+          if(quest && quest.monsterId === monster.id) {
+            if(quest.killedMonster - 1 < quest.nbMonster) {
+              await quest.increment('killedMonster', { by: 1 })
+            } else {
+              await user.increment('coins', { by: quest.coins })
+              let results = await giveXP(user.id, quest.challenge)
+              await quest.destroy()
+              messages.push(`:bookmark: **${user.username}** completed his quest !`)
+              messages = [...messages, ...results.messages]
+            }
+          }
 
           if(triggerEvent()) {
             let items = await Item.findAll()

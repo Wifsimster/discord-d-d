@@ -21,7 +21,8 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
-  await syncTables()  
+  // await syncTables()  
+  // await sequelize.sync({})
   // await sequelize.sync({ force: true })
 
   try {

@@ -11,7 +11,7 @@ module.exports = {
       users.join(' ')
       message.channel.send(`${users} are alive !`)
     } else {
-      message.channel.send('Nobody is alive !')
+      message.channel.send(':skull_crossbones: Nobody is alive !')
     }
   }
 }
