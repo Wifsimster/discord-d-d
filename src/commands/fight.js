@@ -4,7 +4,7 @@ const {
   getUserEquipedItem, random, throwDice, 
   triggerEvent, determineWeaponDamage,
   decrementEquipedItemsCondition, 
-  getUserItemCondition,
+  getUserItemCondition, levelUp,
   determineArmorValue} = require('../utils')
 
 module.exports = {
@@ -26,6 +26,11 @@ module.exports = {
         message.channel.send(`**${opponent.username}** your weapon is broken, fix it !`)
         return
       }
+
+      if(leader.currentHitPoint < leader.maxHitPoint) {
+        message.channel.send(`**${leader.username}**, you are not full life !`)
+        return
+      }
   
       let opponent = await User.findByPk(message.mentions.users.first().id)
 
@@ -40,6 +45,11 @@ module.exports = {
         return
       }
 
+      if(opponent.currentHitPoint < opponent.maxHitPoint) {
+        message.channel.send(`**${opponent.username}** is not full life !`)
+        return
+      }
+
       if(getUserItemCondition(opponent.id, opponentWeapon.id) === 0) {
         message.channel.send(`**${opponent.username}** have a broken weapon, he need to fixed it !`)
         return
@@ -50,7 +60,7 @@ module.exports = {
 
       let messages = []
       messages.push(`⚔ **${leader.username}** (❤ ${leader.currentHitPoint}/${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.currentHitPoint}/${opponent.maxHitPoint})`)
-      messages.push(`⚔ **${leader.username}** with his ${leaderWeapon.name} (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his ${opponentWeapon.name} (🗡 ${opponentWeaponDamage})`)
+      messages.push(`⚔ **${leader.username}** with his \`${leaderWeapon.name}\` (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his \`${opponentWeapon.name}\` (🗡 ${opponentWeaponDamage})`)
 
       if(opponent.currentHitPoint <= 0) {
         messages.push(`🤪 **${leader.username}** tried to fight the corpse of **${opponent.username}**...`)
@@ -80,6 +90,9 @@ module.exports = {
 
       await decrementEquipedItemsCondition(leader.id)    
       await decrementEquipedItemsCondition(opponent.id)
+
+      await leader.update({ currentHitPoint: leader.maxHitPoint})
+      await opponent.update({ currentHitPoint: opponent.maxHitPoint})
 
       // Send all messages at the end
       messages.map(m => { message.channel.send(m) })
@@ -134,13 +147,17 @@ async function attack(leader, opponent) {
 
       if(triggerEvent() && opponent.coins > 0) {
         let randomCoins = random(0, opponent.coins)
-        await leader.update({ coins: randomCoins })
-        messages.push(`☠ **${leader.username}** stoled ${randomCoins} from **${opponent.username}** corpse !`)
+        await leader.increment('coins', { by: randomCoins })
+        await opponent.decrement('coins', { by: randomCoins })
+        messages.push(`☠ **${leader.username}** stoled ${randomCoins} :coin: from **${opponent.username}** corpse !`)
       }
 
-      let randomExperience = random(0, opponent.experience)
+      let randomExperience = Math.ceil(random(0, opponent.experience) / 10)
       await leader.update({ experience: leader.experience + randomExperience })
       messages.push(`🎁 **${leader.username}** got **${randomExperience} XP** !`)
+      
+      let message = await levelUp(leader.id)
+      if(message) { messages.push(message) }
     }
   }
   return messages

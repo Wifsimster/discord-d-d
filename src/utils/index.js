@@ -135,10 +135,8 @@ async function levelUp(userId) {
 
 async function giveXP(player, monster) {
   let messages = []
-  let user = await User.findByPk(player.id)
-  
+  let user = await User.findByPk(player.id)  
   let message = await levelUp(user.id)
-
   if(message) {
     messages.push(message)
   } else {
