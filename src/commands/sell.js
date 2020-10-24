@@ -15,14 +15,14 @@ module.exports = {
         let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id, equiped: 0 }})
 
         if(inventory) {
-          messages.push(`:moneybag: **${user.username}** put his \`${item.name}\` for sale at ${cost} 🪙 (shop ${await determineValue(item.id)} 🪙)`)
+          messages.push(`:moneybag: **${user.username}** put his \`${item.name}\` for sale at ${cost} :coin: (shop ${await determineValue(item.id)} :coin:)`)
 
           if(cost > await determineValue(item.id)) {
             messages.push(`:moneybag: **${user.username}** tries to convince the merchant with his charisma (${user.charisma})...`)
             
             if(throwDie(user.charisma) / user.charisma > 0.9) {
               await user.increment('coins', { by: cost })
-              messages.push(`:moneybag: **${user.username}** sell it for ${cost} 🪙 !`)
+              messages.push(`:moneybag: **${user.username}** sell it for ${cost} :coin: !`)
 
               if(inventory.quantity > 1) {
                 await inventory.decrement('quantity', { by: 1 })
@@ -39,7 +39,7 @@ module.exports = {
             } else {
               await inventory.destroy()
             }
-            messages.push(`:moneybag: **${user.username}** sell it for ${cost} 🪙 !`)
+            messages.push(`:moneybag: **${user.username}** sell it for ${cost} :coin: !`)
           }
         } else {
           messages.push(`\`${args[0]}\` not found !`)

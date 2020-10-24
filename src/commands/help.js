@@ -16,7 +16,7 @@ module.exports = {
         { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`' },
         { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `buy`, `repair`' },
         { name: 'Items', value: '`item`' },
-        { name: 'Interactions', value: '`steal`, `charity`, `prostitute`, `slots`' },
+        { name: 'Interactions', value: '`steal`, `charity`, `prostitute`, `slots`, `tavern`' },
         { name: 'Utilities', value: '`wololo`, `alive`' }
       )    
     message.channel.send(messageEmbed)

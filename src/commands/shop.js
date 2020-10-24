@@ -34,29 +34,34 @@ module.exports = {
     if(items.length > 0) {
       let fields = []
       items.map(item => {
-        switch(item.objectType) {
-        case 'consumable':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` : ${item.description}`)
-          break
-        case 'item':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` : ${item.description}`)
-          break
-        case 'armor':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` (:shield: ${item.armorClass} 🪨 ${item.weight})`)
-          break
-        case 'shield':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` (:shield: ${item.armorClass} 🪨 ${item.weight})`)
-          break
-        case 'weapon':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` (🗡 ${item.damage} 🪨 ${item.weight}) ${item.twoHanded ? '(Two handed)' : '' }`)
-          break
-        default:
-          fields.push(`${item.cost} 🪙 | \`${item.name}\``)
+        if(item.cost > 0) {
+          switch(item.objectType) {
+          case 'consumable':
+            fields.push(`${item.cost} :coin: | \`${item.name}\` : ${item.description}`)
+            break
+          case 'item':
+            fields.push(`${item.cost} :coin: | \`${item.name}\` : ${item.description}`)
+            break
+          case 'armor':
+            fields.push(`${item.cost} :coin: | \`${item.name}\` (:shield: ${item.armorClass} :rock: ${item.weight})`)
+            break
+          case 'shield':
+            fields.push(`${item.cost} :coin: | \`${item.name}\` (:shield: ${item.armorClass} :rock: ${item.weight})`)
+            break
+          case 'weapon':
+            fields.push(`${item.cost} :coin: | \`${item.name}\` (🗡 ${item.damage} :rock: ${item.weight}) ${item.twoHanded ? '(Two handed)' : '' }`)
+            break
+          default:
+            fields.push(`${item.cost} :coin: | \`${item.name}\``)
+          }
         }
-      })    
-      messageEmbed.addField(`${type.toUpperCase()} ${page}/${maxPages}`, fields.join('\n'), true)
-    } else {
-      messageEmbed.addField('Items', 'Such an empty shop !', true)
+      })
+      
+      if(fields.length > 0)  {
+        messageEmbed.addField(`${type.toUpperCase()} ${page}/${maxPages}`, fields.join('\n'), true)
+      } else {
+        messageEmbed.addField('Items', 'Such an empty shop !', true)
+      }
     }
 
     messageEmbed.setFooter('Usage: beta shop [type] [page]\nTypes: [consumable, item, armor, shield, weapon, ammunition]')

@@ -98,6 +98,7 @@ This is a one time thing, be sure to understand what you are doing !`)
             if(item) { itemsId.push(item.id) }
           }
           
+          // Give the first container
           let container = await Item.findOne({ where: { name: 'Pouch' } })
           if(container) { itemsId.push(container.id) }
 
@@ -148,7 +149,13 @@ Bot will now randomly set your 6 abilities between 8 to 15...\n`)
               await Inventory
                 .create({ equiped: true, quantity: 1, itemId: itemId, userId: user.id})
                 .catch(() => { message.channel.send('❗ Something went wrong when adding your items !') })
-            })
+            })  
+            
+            // Give a random trinket
+            let trinkets = await Item.findAll({ where: { objectType: 'trinket' } })
+            let trinket = trinkets[random(0, trinkets.length - 1)]
+            if(trinket) { await Inventory.create({ itemId: trinket.id, userId: user.id }) }
+
             message.channel.send('It\'s all done ! You can go out and get killed now ☠')
           }
         } else {

@@ -350,7 +350,13 @@ async function canMove(userId) {
   return false
 }
 
+async function giveTrinket(userId) {
+  let trinkets = await Item.findAll({ where: { objectType: 'trinket' } })
+  let trinket = trinkets[random(0, trinkets.length - 1)]
+  if(trinket) { await Inventory.create({ itemId: trinket.id, userId: userId }) }
+}
+
 module.exports = { getUserContainer, canMove, heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDie, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent, multipleThrowDie,
-  determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue
+  determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue, giveTrinket
 }

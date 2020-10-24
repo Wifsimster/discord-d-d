@@ -58,6 +58,9 @@ module.exports = {
           case 'weapon':
             fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.damage} :crossed_swords:  ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} :rock:)`)
             break
+          case 'trinket':
+            fields.push(`${inventory.quantity} \`${item.name}\` : ${item.description}`)
+            break
           default:
             fields.push(`${cost} :coin: | ${inventory.quantity} ${item.name} (${item.weight} :rock:)`)
           }

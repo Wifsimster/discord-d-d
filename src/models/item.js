@@ -14,8 +14,7 @@ const Item = sequelize.define('item', {
     defaultValue: 'trinket'
   },
   type: {
-    type: Sequelize.STRING,
-    allowNull: false
+    type: Sequelize.STRING
   },
   cost: {
     type: Sequelize.INTEGER,
