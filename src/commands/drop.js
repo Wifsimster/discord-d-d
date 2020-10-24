@@ -11,7 +11,7 @@ module.exports = {
 
     if(user) {
       if(item) {
-        let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id, equiped: false }})
+        let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
 
         if(inventory) {
           messages.push(`**${user.username}** drop \`${item.name}\` on the floor, you have 20s to pick it up : \`pickup\``)

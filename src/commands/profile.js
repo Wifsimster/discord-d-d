@@ -55,7 +55,7 @@ module.exports = {
         )
         
       // Wealth
-      let fields = [`🪙 ${user.coins}`, `💎 ${user.gemstones}`]
+      let fields = [`:coin: ${user.coins}`, `💎 ${user.gemstones}`]
       messageEmbed.addField('Wealth', fields.join('\n'), true)
 
       // Equipments
@@ -74,10 +74,12 @@ module.exports = {
             fields.push(`\`${item.name}\` ⚔ ${item.damage} :tools: ${inventory.condition} % ${item.twoHanded ? '(Two Handed)' : '' }`)
             break
           default:
-            if(item.name === 'Torch') {
+            switch(item.name) {
+            case 'Torch':
               fields.push(`\`${item.name}\` :fire:`)
-            } else {
-              fields.push(`\`${item.name}\``)
+              break
+            default :
+              fields.push(`\`${item.name}\` ${item.value} 🪨`)
             }
           }
         }))

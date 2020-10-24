@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
+const Item = require('../models/item')
 
 const { getUserUnequipItems, determineValue } = require('../utils')
 
@@ -28,7 +29,10 @@ module.exports = {
         .setAuthor(`${target.username}'s inventory`, target.displayAvatarURL(), 'https://discord.js.org')
         .setThumbnail(target.displayAvatarURL())
 
+      let container = await Item.findOne({ where: { type: 'container' } })
+
       let totalWeight = 0
+      let maxWeight = container.value
 
       // Equipments
       if(items.length > 0) {
@@ -59,9 +63,9 @@ module.exports = {
             fields.push(`${cost} 🪙 | ${inventory.quantity} ${item.name} (${item.weight} 🪨)`)
           }
         }))
-        messageEmbed.addField(`Inventory (${totalWeight} 🪨)`, fields.join('\n'), true)
+        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}🪨)`, fields.join('\n'), true)
       } else {
-        messageEmbed.addField('Inventory', 'Such an empty inventory !', true)
+        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}🪨)`, 'Such an empty inventory !', true)
       }
     
       message.channel.send(messageEmbed)

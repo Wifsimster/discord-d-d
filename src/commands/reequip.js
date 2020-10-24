@@ -5,6 +5,9 @@ const Inventory = require('../models/inventory')
 
 module.exports = {
   name: 'reequip',
+  description: '',
+  usage: '[commande name]',
+  cooldown: 5,
   async execute(message) {
     let user = await User.findByPk(message.author.id)
 
@@ -15,17 +18,36 @@ module.exports = {
         let weapon = await Item.findOne({ where: { name: target.class.weapon } })
         let armor = await Item.findOne({ where: { name: target.class.armor } })
         let shield = await Item.findOne({ where: { name: target.class.shield } })
+        let container = await Item.findOne({ where: { name: 'Pouch' } })
 
-        if(weapon) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: weapon.id }) }
-        if(armor) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: armor.id }) }
-        if(shield) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: shield.id }) }
+        if(weapon) {
+          let inventoryWeapon = await Inventory.findOne({ where: { itemId: weapon.id, userId: target.id }})
+          if(!inventoryWeapon) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: weapon.id }) }
+        }
+        
+        if(armor) { 
+          let inventoryArmor = await Inventory.findOne({ where: { itemId: armor.id, userId: target.id }})
+          if(!inventoryArmor) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: armor.id })
+          }
+        
+          if(shield) {
+            let inventoryShield = await Inventory.findOne({ where: { itemId: shield.id, userId: target.id }})
+            if(!inventoryShield) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: shield.id })
+            }
 
-        message.channel.send(`**${target.username}** reequiped !`) 
-      } else {
-        message.channel.send(`**${message.author}** doesn't have a character yet !\n\`beta create\` to create a character`) 
+            if(container) {
+              let inventoryContainer = await Inventory.findOne({ where: { itemId: container.id, userId: target.id }})
+              if(!inventoryContainer) { await Inventory.create({ quantity: 1, equiped: true, userId: target.id, itemId: container.id }) }
+            }
+
+            message.channel.send(`**${target.username}** reequiped !`)
+          } else {
+            message.channel.send(`**${message.author}** doesn't have a character yet !\n\`beta create\` to create a character`) 
+          }
+        } else {
+          message.channel.send(`**${message.author}** doesn't have a character yet !\n\`beta create\` to create a character`)  
+        }
       }
-    } else {
-      message.channel.send(`**${message.author}** doesn't have a character yet !\n\`beta create\` to create a character`)  
     }
   }
 }

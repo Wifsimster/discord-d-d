@@ -97,6 +97,9 @@ This is a one time thing, be sure to understand what you are doing !`)
             let item = await Item.findOne({ where: { name: selectedClass.weapon }})
             if(item) { itemsId.push(item.id) }
           }
+          
+          let container = await Item.findOne({ where: { name: 'Pouch' } })
+          if(container) { itemsId.push(container.id) }
 
           const abilities = await Ability.findAll()
 
