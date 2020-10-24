@@ -4,7 +4,7 @@ const {
   getUserEquipedItem, random, throwDie, 
   triggerEvent, determineWeaponDamage,
   decrementEquipedItemsCondition, 
-  getUserItemCondition, levelUp,
+  getUserItemCondition, levelUp, canMove,
   determineArmorValue} = require('../utils')
 
 module.exports = {
@@ -31,6 +31,11 @@ module.exports = {
         message.channel.send(`**${leader.username}**, you are not full life !`)
         return
       }
+
+      if(!canMove(leader.id)) {        
+        message.channel.send(`:rock: **${leader.username}**, you carry to much items to fight !`)
+        return
+      }
   
       let opponent = await User.findByPk(message.mentions.users.first().id)
 
@@ -55,12 +60,17 @@ module.exports = {
         return
       }
 
+      if(!canMove(opponent.id)) {        
+        message.channel.send(`:rock: **${opponent.username}** carried to much items to fight !`)
+        return
+      }
+
       let leaderWeaponDamage = await determineWeaponDamage(leader.id)
       let opponentWeaponDamage = await determineWeaponDamage(opponent.id)
 
       let messages = []
-      messages.push(`⚔ **${leader.username}** (❤ ${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.maxHitPoint})`)
-      messages.push(`⚔ **${leader.username}** with his \`${leaderWeapon.name}\` (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his \`${opponentWeapon.name}\` (🗡 ${opponentWeaponDamage})`)
+      messages.push(`:crossed_swords: **${leader.username}** (❤ ${leader.maxHitPoint}) vs **${opponent.username}** (❤ ${opponent.maxHitPoint})`)
+      messages.push(`:crossed_swords: **${leader.username}** with his \`${leaderWeapon.name}\` (🗡 ${leaderWeaponDamage}) defie **${opponent.username}** with his \`${opponentWeapon.name}\` (🗡 ${opponentWeaponDamage})`)
 
       if(opponent.currentHitPoint <= 0) {
         messages.push(`🤪 **${leader.username}** tried to fight the corpse of **${opponent.username}**...`)
@@ -127,18 +137,18 @@ async function attack(leader, opponent) {
 
     switch(randomValue) {
     case 20:          
-      messages.push(`⚔ **${leader.username}** made a critical hit with his **${leaderWeapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => 🗡 -${firstDamageDie + secondDamageDie})`)
+      messages.push(`:crossed_swords: **${leader.username}** made a critical hit with his **${leaderWeapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => 🗡 -${firstDamageDie + secondDamageDie})`)
       opponent.currentHitPoint = opponent.currentHitPoint - (firstDamageDie + secondDamageDie)
       break
     case 1:
-      messages.push(`⚔ **${leader.username}** missed **${opponent.username}** ! (:game_die: ${randomValue})`)
+      messages.push(`:crossed_swords: **${leader.username}** missed **${opponent.username}** ! (:game_die: ${randomValue})`)
       break
     default:
       if(armorDamage < 0 ) {
-        messages.push(`⚔ **${leader.username}** hit **${opponent.username}** (🛡 ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
+        messages.push(`:crossed_swords: **${leader.username}** hit **${opponent.username}** (:shield: ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
         opponent.currentHitPoint = opponent.currentHitPoint - firstDamageDie
       } else {
-        messages.push(`⚔ **${leader.username}** hit **${opponent.username}** but his armor prevent any damage ! (🛡 ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 0)`)
+        messages.push(`:crossed_swords: **${leader.username}** hit **${opponent.username}** but his armor prevent any damage ! (:shield: ${opponentArmorClass} - :game_die: ${randomValue} => 🗡 0)`)
       }
     }
 

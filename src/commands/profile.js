@@ -55,7 +55,7 @@ module.exports = {
         )
         
       // Wealth
-      let fields = [`:coin: ${user.coins}`, `💎 ${user.gemstones}`]
+      let fields = [`:coin: ${user.coins}`, `:gem: ${user.gemstones}`]
       messageEmbed.addField('Wealth', fields.join('\n'), true)
 
       // Equipments
@@ -65,13 +65,13 @@ module.exports = {
           let inventory = await Inventory.findOne({ where: { userId: user.id, itemId: item.id }})
           switch(item.objectType) {
           case 'armor':
-            fields.push(`\`${item.name}\` 🛡 ${item.armorClass} :tools: ${inventory.condition} %`)
+            fields.push(`\`${item.name}\` :shield: ${item.armorClass} :tools: ${inventory.condition} %`)
             break
           case 'shield':
-            fields.push(`\`${item.name}\` 🛡 ${item.armorClass} :tools: ${inventory.condition} %`)
+            fields.push(`\`${item.name}\` :shield: ${item.armorClass} :tools: ${inventory.condition} %`)
             break
           case 'weapon':
-            fields.push(`\`${item.name}\` ⚔ ${item.damage} :tools: ${inventory.condition} % ${item.twoHanded ? '(Two Handed)' : '' }`)
+            fields.push(`\`${item.name}\` :crossed_swords: ${item.damage} :tools: ${inventory.condition} % ${item.twoHanded ? '(Two Handed)' : '' }`)
             break
           default:
             switch(item.name) {
@@ -79,7 +79,7 @@ module.exports = {
               fields.push(`\`${item.name}\` :fire:`)
               break
             default :
-              fields.push(`\`${item.name}\` ${item.value} 🪨`)
+              fields.push(`\`${item.name}\` ${item.value} :rock:`)
             }
           }
         }))

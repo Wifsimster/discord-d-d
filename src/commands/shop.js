@@ -42,10 +42,10 @@ module.exports = {
           fields.push(`${item.cost} 🪙 | \`${item.name}\` : ${item.description}`)
           break
         case 'armor':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` (🛡 ${item.armorClass} 🪨 ${item.weight})`)
+          fields.push(`${item.cost} 🪙 | \`${item.name}\` (:shield: ${item.armorClass} 🪨 ${item.weight})`)
           break
         case 'shield':
-          fields.push(`${item.cost} 🪙 | \`${item.name}\` (🛡 ${item.armorClass} 🪨 ${item.weight})`)
+          fields.push(`${item.cost} 🪙 | \`${item.name}\` (:shield: ${item.armorClass} 🪨 ${item.weight})`)
           break
         case 'weapon':
           fields.push(`${item.cost} 🪙 | \`${item.name}\` (🗡 ${item.damage} 🪨 ${item.weight}) ${item.twoHanded ? '(Two handed)' : '' }`)

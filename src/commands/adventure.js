@@ -13,7 +13,8 @@ const {
   triggerEvent, 
   decrementEquipedItemsCondition, 
   getUserItemCondition,
-  determineArmorValue} = require('../utils')
+  determineArmorValue,
+  canMove} = require('../utils')
 const Quest = require('../models/quest')
 
 module.exports = {
@@ -34,7 +35,8 @@ module.exports = {
       // Keep user with character & life
       await Promise.all(mentions.map(async mention => {
         let user = await User.findByPk(mention.id, { include: [{ model: Inventory, where: { equiped: true }, include: [{ model: Item }] }]})
-        if(user && user.currentHitPoint > 0 && user.username !== leader.username) {
+      
+        if(user && user.currentHitPoint > 0 && user.username !== leader.username && canMove(user.id)) {
           players.push(mention) 
         }
       }))
@@ -70,7 +72,7 @@ module.exports = {
         let monster = await initializeMonster(environment.id)
 
         if(monster) {
-          messages.push(`⚔ A **${monster.name}** attack your group ! (🗡 ${monster.strength}  🛡 ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
+          messages.push(`:crossed_swords: A **${monster.name}** attack your group ! (🗡 ${monster.strength}  :shield: ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
 
           let index = 0
           while(index < players.length && monster.currentHitPoint > 0) {
@@ -149,8 +151,8 @@ async function attackMonster(player, monster) {
         let dieValue = throwDie(user.hitDie)
         await user.update({ currentHitPoint: user.currentHitPoint - dieValue })        
         let randomMessages = [
-          `⚔ **${user.username}** slides on a big :shit: and hit his head, loosing - ${dieValue} ❤ !`,
-          `⚔ **${user.username}** hit himself with his \`${weapon.name}\`, loosing - ${dieValue} ❤ !`,
+          `:crossed_swords: **${user.username}** slides on a big :shit: and hit his head, loosing - ${dieValue} ❤ !`,
+          `:crossed_swords: **${user.username}** hit himself with his \`${weapon.name}\`, loosing - ${dieValue} ❤ !`,
           `:mouse_trap:  **${user.username}** walk on a trap and loose - ${dieValue} ❤ !`
         ]
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
@@ -163,18 +165,18 @@ async function attackMonster(player, monster) {
 
         switch(randomValue) {
         case 20:          
-          messages.push(`⚔ **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
+          messages.push(`:crossed_swords: **${user.username}** made a critical hit with his **${weapon.name}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
           monster.currentHitPoint = monster.currentHitPoint - (firstDamageDie + secondDamageDie)
           break
         case 1:
-          messages.push(`⚔ **${user.username}** missed the **${monster.name}** ! (:game_die: ${randomValue})`)
+          messages.push(`:crossed_swords: **${user.username}** missed the **${monster.name}** ! (:game_die: ${randomValue})`)
           break
         default :
           if(armorDamage < 0 ) {
-            messages.push(`⚔ **${user.username}** hit the **${monster.name}** (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
+            messages.push(`:crossed_swords: **${user.username}** hit the **${monster.name}** (:shield: ${monster.armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
             monster.currentHitPoint = monster.currentHitPoint - firstDamageDie
           } else {
-            messages.push(`⚔ **${user.username}** hit the **${monster.name}** but his armor prevent any damage ! (🛡 ${monster.armorClass} - :game_die: ${randomValue} => 🗡 0)`)
+            messages.push(`:crossed_swords: **${user.username}** hit the **${monster.name}** but his armor prevent any damage ! (:shield: ${monster.armorClass} - :game_die: ${randomValue} => 🗡 0)`)
           }
         }
     
@@ -229,15 +231,15 @@ async function attackPlayer(player, monster) {
 
       switch(randomValue) {
       case 20:          
-        messages.push(`⚔ **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
+        messages.push(`:crossed_swords: **${monster.name}** made a critical hit to **${user.username}** ! (:game_die: ${firstDamageDie} + :game_die: ${secondDamageDie} => - 🗡 ${firstDamageDie + secondDamageDie})`)
         userCurrentHitPoint = userCurrentHitPoint - (firstDamageDie + secondDamageDie)
         break
       case 1:
-        messages.push(`⚔ **${monster.name}** missed **${user.username}** ! (:game_die: ${randomValue})`)
+        messages.push(`:crossed_swords: **${monster.name}** missed **${user.username}** ! (:game_die: ${randomValue})`)
         break
       default :
         if(armorDamage < 0 ) {
-          messages.push(`⚔ **${monster.name}** hit **${user.username}** (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
+          messages.push(`:crossed_swords: **${monster.name}** hit **${user.username}** (:shield: ${armorClass} - :game_die: ${randomValue} => 🗡 ${armorDamage})`)
           
           let potentialUserCurrentHitPoint = userCurrentHitPoint - firstDamageDie
 
@@ -255,7 +257,7 @@ async function attackPlayer(player, monster) {
             messages.push(`☠ **${monster.name}** killed **${user.username}** !`)
           }
         } else {
-          messages.push(`⚔ **${monster.name}** hit **${user.username}** but his armor prevent any damage ! (🛡 ${armorClass} - :game_die: ${randomValue} => 🗡 0)`)
+          messages.push(`:crossed_swords: **${monster.name}** hit **${user.username}** but his armor prevent any damage ! (:shield: ${armorClass} - :game_die: ${randomValue} => 🗡 0)`)
         }
       }
 

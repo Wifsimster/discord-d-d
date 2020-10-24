@@ -2,9 +2,8 @@ const Discord = require('discord.js')
 
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
-const Item = require('../models/item')
 
-const { getUserUnequipItems, determineValue } = require('../utils')
+const { getUserUnequipItems, determineValue, getUserContainer } = require('../utils')
 
 module.exports = {
   name: 'inventory',
@@ -29,10 +28,10 @@ module.exports = {
         .setAuthor(`${target.username}'s inventory`, target.displayAvatarURL(), 'https://discord.js.org')
         .setThumbnail(target.displayAvatarURL())
 
-      let container = await Item.findOne({ where: { type: 'container' } })
+      let container = await getUserContainer(user.id)
 
       let totalWeight = 0
-      let maxWeight = container.value
+      let maxWeight = container ? container.value : 0
 
       // Equipments
       if(items.length > 0) {
@@ -45,27 +44,27 @@ module.exports = {
 
           switch(item.objectType) {
           case 'consumable':
-            fields.push(`${cost} 🪙 | ${inventory.quantity} \`${item.name}\` (${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.weight} :rock:)`)
             break
           case 'item':
-            fields.push(`${cost} 🪙 | ${inventory.quantity} \`${item.name}\` (${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.weight} :rock:)`)
             break
           case 'armor':
-            fields.push(`${cost} 🪙 | ${inventory.quantity} \`${item.name}\` (${item.armorClass} 🛡 ${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.armorClass} :shield: ${item.weight} :rock:)`)
             break
           case 'shield':
-            fields.push(`${cost} 🪙 | ${inventory.quantity} \`${item.name}\` (${item.armorClass} 🛡 ${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.armorClass} :shield: ${item.weight} :rock:)`)
             break
           case 'weapon':
-            fields.push(`${cost} 🪙 | ${inventory.quantity} \`${item.name}\` (${item.damage} ⚔  ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} \`${item.name}\` (${item.damage} :crossed_swords:  ${item.damageType}) ${item.twoHanded ? '(Two handed)' : '' } (${item.weight} :rock:)`)
             break
           default:
-            fields.push(`${cost} 🪙 | ${inventory.quantity} ${item.name} (${item.weight} 🪨)`)
+            fields.push(`${cost} :coin: | ${inventory.quantity} ${item.name} (${item.weight} :rock:)`)
           }
         }))
-        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}🪨)`, fields.join('\n'), true)
+        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}:rock:)`, fields.join('\n'), true)
       } else {
-        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}🪨)`, 'Such an empty inventory !', true)
+        messageEmbed.addField(`Inventory (${totalWeight}/${maxWeight}:rock:)`, 'Such an empty inventory !', true)
       }
     
       message.channel.send(messageEmbed)

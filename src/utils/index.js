@@ -210,7 +210,7 @@ async function savingThrow(userId) {
     messages.push(`:wind_blowing_face: **${user.username}** survive the last damages by making a saving throws (:game_die: ${randomValue} >= ${abilityScore})`)
   } else {
     let newCurrentHitPoint = user.currentHitPoint - randomValue
-    messages.push(`⚔ **${user.username}** tried a saving throws but failed (:game_die: ${randomValue} < ${abilityScore})`)
+    messages.push(`:crossed_swords: **${user.username}** tried a saving throws but failed (:game_die: ${randomValue} < ${abilityScore})`)
     await user.update({ currentHitPoint: newCurrentHitPoint < 0 ? 0 : newCurrentHitPoint })
   }
   return { messages }
@@ -309,7 +309,48 @@ async function determineArmorValue(userId, type = 'armor') {
   return 0
 }
 
-module.exports = { heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
+async function getUserContainer(userId) {
+  let user = await User.findByPk(userId, { include: { model: Inventory, where: { equiped: true } } })
+
+  if(user) {
+    let items = await Promise.all(user.inventories.map(async inventory => await Item.findByPk(inventory.itemId)))
+    let container = items.find(item => item.type === 'container')
+    if(container) {
+      return container
+    }
+    return null
+  }
+}
+
+async function userCurrentWeight(userId) {
+  let user = await User.findByPk(userId, { include: [{ model: Inventory, where: { equiped: false }, include: [{ model: Item }] }] })
+
+  if(user) {
+    let inventories = user.inventories
+    if(inventories) {
+      let weights = inventories.map(inventory => {
+        return inventory.quantity * inventory.item.weight
+      })
+      return weights.reduce((accumulator, weight) => accumulator + weight)
+    } else {
+      return 0
+    }
+  }
+  return null
+}
+
+async function canMove(userId) {
+  let user = await User.findByPk(userId)
+  let container = await getUserContainer(userId)
+  let totalWeight = await userCurrentWeight(userId)
+
+  if(user && container && totalWeight < container.value) {
+    return true
+  }
+  return false
+}
+
+module.exports = { getUserContainer, canMove, heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDie, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent, multipleThrowDie,
   determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue
 }

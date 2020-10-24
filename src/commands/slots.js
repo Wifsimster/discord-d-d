@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { random, throwDie } = require('../utils')
+const { random } = require('../utils')
 const User = require('../models/user')
 
 module.exports = {
