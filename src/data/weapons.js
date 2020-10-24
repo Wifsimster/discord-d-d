@@ -64,7 +64,7 @@ module.exports = [
     weight: 4
   },
   {
-    name: 'Quaterstaff',    
+    name: 'Quarterstaff',    
     objectType: 'weapon',
     type: 'Simple meele',
     cost: 20,

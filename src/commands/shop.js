@@ -49,7 +49,7 @@ module.exports = {
             fields.push(`${item.cost} :coin: | \`${item.name}\` (:shield: ${item.armorClass} :rock: ${item.weight})`)
             break
           case 'weapon':
-            fields.push(`${item.cost} :coin: | \`${item.name}\` (🗡 ${item.damage} :rock: ${item.weight}) ${item.twoHanded ? '(Two handed)' : '' }`)
+            fields.push(`${item.cost} :coin: | \`${item.name}\` (🗡 ${item.damage} :rock: ${item.weight})  ${item.needAmmunition ? '(Ammunition)' : ''} ${item.twoHanded ? '(Two handed)' : '' }`)
             break
           default:
             fields.push(`${item.cost} :coin: | \`${item.name}\``)
