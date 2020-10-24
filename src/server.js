@@ -28,7 +28,7 @@ client.once('ready', async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    // await populateTables()
+    await populateTables()
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
