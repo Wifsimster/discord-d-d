@@ -120,7 +120,7 @@ async function attack(leader, opponent) {
   leader = await User.findByPk(leader.id)
   opponent = await User.findByPk(opponent.id)
   
-  let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon') 
+  let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon')
 
   if(leader.currentHitPoint > 0 && opponent.currentHitPoint > 0) {
     if(!leaderWeapon) {

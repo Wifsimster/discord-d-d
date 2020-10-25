@@ -1,7 +1,8 @@
 const User = require('../models/user')
-const Environment = require('../models/environment')
 const Item = require('../models/item')
+const Quest = require('../models/quest')
 const Inventory = require('../models/inventory')
+const Environment = require('../models/environment')
 
 const { 
   heal, 
@@ -15,7 +16,6 @@ const {
   getUserItemCondition,
   determineArmorValue,
   canMove} = require('../utils')
-const Quest = require('../models/quest')
 
 module.exports = {
   name: 'adventure',

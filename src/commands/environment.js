@@ -7,6 +7,8 @@ module.exports = {
   execute(message, args) {    
     let area = args[0]
     
+    // TODO
+    
     message.channel.send(`${message.author} fight ${opponent} !`)
   }
 }
