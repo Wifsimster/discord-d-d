@@ -356,7 +356,61 @@ async function giveTrinket(userId) {
   if(trinket) { await Inventory.create({ itemId: trinket.id, userId: userId }) }
 }
 
-module.exports = { getUserContainer, canMove, heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
+async function canParticipate(userId) {
+  let user = await User.findByPk(userId)
+  if(user) {
+    if(user.currentHitPoint === user.maxHitPoint) {
+      if(canMove(userId)) {
+        let weapon = await getUserEquipedItem(user.id, 'weapon')
+        if(weapon) {
+          return { value: true }
+        } else {
+          return { message: `**${user.username}** you don't have a weapon equiped !`, value: false }
+        }
+      } else {
+        return { message: `**${user.username}** you are to heavy to move !`, value: false }
+      }
+    } else {
+      return { message: `**${user.username}** you are not full life !`, value: false }
+    }
+  } else {
+    return { message: `**${userId}** doesn't have a character yet !`, value: false }
+  }
+}
+
+async function handleDungeon(message) {  
+  if(message.content.startsWith('Who is ready to enter the')) {
+    message.react('👍')
+    let group = []
+
+    const filter = (reaction, user) => {
+      return reaction.emoji.name === '👍' && !user.bot && user.id !== message.author.id
+    }
+    
+    const collector = message.createReactionCollector(filter, { time: 15000 })
+
+    collector.on('collect', async (reaction, user) => {
+      let results = await canParticipate(user.id)
+      if(results.value) {
+        group.push(user)
+      } else {
+        message.channel.send(results.message)
+      }
+    })
+    
+    collector.on('end', async collected => { 
+      let dungeonEnvironment = message.content.includes('Forest') ? 'Forest' : null
+
+      if(group.length > 0) {
+        message.channel.send(`:synagogue: **${group}** enter the **${dungeonEnvironment}** dungeon !`)
+      } else {
+        message.channel.send('No one is ready !')
+      }
+    })
+  }
+}
+
+module.exports = { canParticipate, handleDungeon, getUserContainer, canMove, heal, getMaxExperience, savingThrow, getItem, getPotionFromUser, getUserUnequipItems, getUserEquipedItem, 
   random, throwDie, randomDamage, getUserLevel, initializeMonster, levelUp, giveXP, triggerEvent, multipleThrowDie,
   determineValue, decrementEquipedItemsCondition, getUserItemCondition, determineWeaponDamage, determineArmorValue, giveTrinket
 }

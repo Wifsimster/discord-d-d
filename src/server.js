@@ -4,7 +4,7 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
-const { random } = require('./utils')
+const { random, handleDungeon } = require('./utils')
 
 require('./models/associations')
 
@@ -39,6 +39,10 @@ client.on('ready', () => {
 })
 
 client.on('message', async message => {
+  // Dungeon
+  handleDungeon(message)
+
+  // General
   if(!message.content.toLowerCase().startsWith(prefix) || message.author.bot) {
     return
   }
