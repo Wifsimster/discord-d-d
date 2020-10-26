@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/Wifsimster/discord-d-d#readme",
   "dependencies": {
-    "discord.js": "^12.3.1",
+    "discord.js": "^12.4.1",
     "sequelize": "^6.3.5",
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.11.0"
+    "eslint": "^7.12.0"
   }
 }
