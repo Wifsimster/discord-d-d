@@ -3,7 +3,7 @@ const User = require('../models/user')
 const Quest = require('../models/quest')
 const Monster = require('../models/monster')
 
-const { random, multipleThrowDie } = require('../utils')
+const { random, multipleThrowDice } = require('../utils')
 
 module.exports = {
   name: 'quest',
@@ -73,6 +73,6 @@ function generateQuest(monsters) {
   let monster = monsters[random(0, monsters.length - 1)]
   let nbMonster = random(1, 10)  
   let randomChallenge = monster.challenge * nbMonster
-  let randomCoins = multipleThrowDie(nbMonster)
+  let randomCoins = multipleThrowDice(nbMonster)
   return { monster: monster, nbMonster: nbMonster, challenge: randomChallenge, coins: randomCoins}
 }

@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
 
-const { getUserUnequipItems, determineValue, getUserContainer } = require('../utils')
+const { getUserUnequipItems, determineItemValue, getUserContainer } = require('../utils/item')
 
 module.exports = {
   name: 'inventory',
@@ -40,7 +40,7 @@ module.exports = {
           let inventory = await Inventory.findOne({ where: { itemId: item.id, userId: user.id }})
           totalWeight += inventory.quantity * item.weight
 
-          let cost = await determineValue(item.id)
+          let cost = await determineItemValue(item.id)
 
           switch(item.objectType) {
           case 'consumable':

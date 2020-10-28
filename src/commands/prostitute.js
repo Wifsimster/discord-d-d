@@ -1,13 +1,13 @@
 const User = require('../models/user')
-const { throwDie, random } = require('../utils')
+const { throwDice, random } = require('../utils')
 
 module.exports = {
   name: 'prostitute',
   cooldown: 60,
   async execute(message) {
     let user = await User.findByPk(message.author.id)
-    let randomCoins = throwDie()
-    let randomCharisma = throwDie(user.charisma)
+    let randomCoins = throwDice()
+    let randomCharisma = throwDice(user.charisma)
 
     message.channel.send(`:dancer: **${user.username}** tries to seduce a stranger.. (Charisma ${user.charisma})`)
 

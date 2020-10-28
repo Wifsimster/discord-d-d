@@ -1,6 +1,6 @@
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
-const { throwDie, getPotionFromUser } = require('../utils')
+const { throwDice, getPotionFromUser } = require('../utils')
 
 module.exports = {
   name: 'heal',
@@ -26,8 +26,8 @@ module.exports = {
         let inventoryPotion = await getPotionFromUser(user.id)
     
         if(inventoryPotion && inventoryPotion.quantity > 0) {
-          firstThrowValue = throwDie(4)
-          secondThrowValue = throwDie(4)
+          firstThrowValue = throwDice(4)
+          secondThrowValue = throwDice(4)
           randomHitPoint = firstThrowValue + secondThrowValue + 2
           let toHeal = target.maxHitPoint - target.currentHitPoint
           if(randomHitPoint > toHeal) {

@@ -1,4 +1,4 @@
-const { random, throwDie } = require('../utils')
+const { random, throwDice } = require('../utils')
 const User = require('../models/user')
 
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
             if(user.coins >= 10) {
               await user.increment('alcool', { by: 10 })
               await user.decrement('coins', { by: 10 })
-              let randomValue = throwDie(user.hitDie)
+              let randomValue = throwDice(user.hitDie)
 
               if(user.currentHitPoint + random <= user.maxHitPoint) {                
                 await user.update({ currentHitPoint: randomValue })                

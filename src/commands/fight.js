@@ -1,7 +1,7 @@
 const User = require('../models/user')
 
 const { 
-  getUserEquipedItem, random, throwDie, 
+  getUserEquipedItem, random, throwDice, 
   triggerEvent, determineWeaponDamage,
   decrementEquipedItemsCondition, 
   getUserItemCondition, levelUp, canMove,
@@ -129,11 +129,11 @@ async function attack(leader, opponent) {
     }
      
     let leaderWeaponDamage = await determineWeaponDamage(leader.id)
-    let randomValue = throwDie()
+    let randomValue = throwDice()
     let opponentArmorClass = await determineArmorValue(opponent.id, 'armor') + await determineArmorValue(opponent.id, 'shield')
     let armorDamage = opponentArmorClass - randomValue
-    let firstDamageDie = Math.round(throwDie(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
-    let secondDamageDie =  Math.round(throwDie(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
+    let firstDamageDie = Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
+    let secondDamageDie =  Math.round(throwDice(leader.hitDie) * leaderWeaponDamage / leader.hitDie)
 
     switch(randomValue) {
     case 20:          

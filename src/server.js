@@ -4,7 +4,7 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
-const { random, handleDungeon } = require('./utils')
+const { random, handleDungeon } = require('./utils/dungeon')
 
 require('./models/associations')
 

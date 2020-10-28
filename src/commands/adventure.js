@@ -8,8 +8,8 @@ const {
   heal, 
   savingThrow, 
   getUserEquipedItem, 
-  random, throwDie, 
-  initializeMonster, giveXP, 
+  random, throwDice, 
+  initializeMonster, giveExperience, 
   determineWeaponDamage,
   triggerEvent, 
   decrementEquipedItemsCondition, 
@@ -101,7 +101,7 @@ module.exports = {
           if(players.length > 0) {
             // Give monster XP to players          
             await Promise.all(players.map(async player => {
-              let results = await giveXP(player, monster)
+              let results = await giveExperience(player, monster)
               messages = [...messages, ...results.messages]
             
               let user = await User.findByPk(player.id)
@@ -148,7 +148,7 @@ async function attackMonster(player, monster) {
 
       // Random event
       if(triggerEvent()) {
-        let dieValue = throwDie(user.hitDie)
+        let dieValue = throwDice(user.hitDie)
         await user.update({ currentHitPoint: user.currentHitPoint - dieValue })        
         let randomMessages = [
           `:crossed_swords: **${user.username}** slides on a big :shit: and hit his head, loosing - ${dieValue} ❤ !`,
@@ -158,10 +158,10 @@ async function attackMonster(player, monster) {
         messages.push(randomMessages[random(0, randomMessages.length - 1)])
       } else {
         let weaponDamage = await determineWeaponDamage(user.id)
-        let randomValue = throwDie()
+        let randomValue = throwDice()
         let armorDamage = monster.armorClass - randomValue
-        let firstDamageDie = Math.round(throwDie(user.hitDie) * weaponDamage / user.hitDie)
-        let secondDamageDie =  Math.round(throwDie(user.hitDie) * weaponDamage / user.hitDie)
+        let firstDamageDie = Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
+        let secondDamageDie =  Math.round(throwDice(user.hitDie) * weaponDamage / user.hitDie)
 
         switch(randomValue) {
         case 20:          
@@ -190,7 +190,7 @@ async function attackMonster(player, monster) {
               await quest.increment('killedMonster', { by: 1 })
             } else {
               await user.increment('coins', { by: quest.coins })
-              let results = await giveXP(user.id, quest.challenge)
+              let results = await giveExperience(user.id, quest.challenge)
               await quest.destroy()
               messages.push(`:bookmark: **${user.username}** completed his quest !`)
               messages = [...messages, ...results.messages]
@@ -223,11 +223,11 @@ async function attackPlayer(player, monster) {
     let userCurrentHitPoint = user.currentHitPoint
 
     if(monster.currentHitPoint > 0) {
-      let randomValue = throwDie()
+      let randomValue = throwDice()
       let armorClass = await determineArmorValue(user.id, 'armor') + await determineArmorValue(user.id, 'shield')
       let armorDamage = armorClass - randomValue
-      let firstDamageDie = Math.round(throwDie(monster.die) * monster.strength / monster.die)
-      let secondDamageDie = Math.round(throwDie(monster.die) * monster.strength / monster.die)
+      let firstDamageDie = Math.round(throwDice(monster.die) * monster.strength / monster.die)
+      let secondDamageDie = Math.round(throwDice(monster.die) * monster.strength / monster.die)
 
       switch(randomValue) {
       case 20:          
