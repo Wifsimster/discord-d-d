@@ -1,6 +1,8 @@
 const User = require('../models/user')
 const Inventory = require('../models/inventory')
-const { throwDice, getPotionFromUser } = require('../utils')
+
+const { throwDice } = require('../utils')
+const { getPotionFromUser } = require('../utils/heal')
 
 module.exports = {
   name: 'heal',

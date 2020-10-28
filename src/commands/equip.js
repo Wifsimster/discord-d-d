@@ -1,6 +1,7 @@
 const Inventory = require('../models/inventory')
 const Item = require('../models/item')
-const { getItem, getUserEquipedItem } = require('../utils')
+
+const { getItem, getUserEquipedItem } = require('../utils/item')
 
 module.exports = {
   name: 'equip',

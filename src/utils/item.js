@@ -3,6 +3,8 @@ const User = require('../models/user')
 const Inventory = require('../models/inventory')
 const { Sequelize } = require('sequelize')
 
+const { random, triggerEvent } = require('../utils')
+
 async function getItem(name) {
   if(name) {
     return await Item.findOne({ where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('name')), Sequelize.fn('lower', name)) })
@@ -65,4 +67,21 @@ async function getUserUnequipItems(userId) {
   return await Item.findAll({ where: { id: inv }})
 }
 
-module.exports = { getItem, determineItemValue, getUserItemCondition, getUserEquipedItem, getUserContainer, getUserUnequipItems }
+async function foundItemEvent(players) {
+  if(triggerEvent()) {
+    let player = players[random(0, players.length - 1)]
+    let user = await User.findByPk(player.id)
+    let items = await Item.findAll()
+    let item = items[random(0, items.length - 1)]
+    await Inventory.create({ itemId: item.id, userId: user.id})
+
+    let tmp = [
+      `🔍 ${user.username} inspect a pile of trash on the road and found a \`${item.name}\` !`,
+      `🎁 ${user.username} return a corpse and take his \`${item.name}\` !`
+    ]
+
+    return tmp[random(0, tmp.length - 1)]
+  }
+}
+
+module.exports = { getItem, determineItemValue, getUserItemCondition, getUserEquipedItem, getUserContainer, getUserUnequipItems, foundItemEvent }

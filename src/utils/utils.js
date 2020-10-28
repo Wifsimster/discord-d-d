@@ -19,4 +19,13 @@ function triggerEvent() {
   return throwDice() === throwDice()
 }
 
-module.exports = { random, throwDice, multipleThrowDice, triggerEvent }
+function combatTriggerMessage(players) {
+  let player = players[random(0, players.length - 1)]
+  let triggers = [`🤨 **${player.username}** see something ...`, 
+    `🤫 **${player.username}** heard something ...`, 
+    `🤫 **${player.username}** walk on something ...`
+  ]
+  return triggers[random(0, triggers.length - 1)]
+}
+
+module.exports = { random, throwDice, multipleThrowDice, triggerEvent, combatTriggerMessage }

@@ -6,6 +6,6 @@
 // const { getUserLevel, getMaxExperience, levelUp, giveExperience } = require('./level')
 // const { initializeMonster } = require('./monster')
 // const { getUserCurrentWeight, canMove, giveTrinket, canParticipate } = require('./user')
-const { random, throwDice, multipleThrowDice, triggerEvent } = require('./utils')
+const { random, throwDice, multipleThrowDice, triggerEvent, combatTriggerMessage } = require('./utils')
 
-module.exports = { random, throwDice, multipleThrowDice, triggerEvent }
+module.exports = { random, throwDice, multipleThrowDice, triggerEvent, combatTriggerMessage }

@@ -1,6 +1,8 @@
 const User = require('../models/user')
-const { getItem, throwDice, determineItemValue } = require('../utils')
 const Inventory = require('../models/inventory')
+
+const { throwDice } = require('../utils')
+const { getItem, determineItemValue } = require('../utils/item')
 
 module.exports = {
   name: 'sell',
