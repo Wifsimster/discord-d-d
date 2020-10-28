@@ -2,7 +2,7 @@ const { random, throwDice } = require('./utils')
 const { Op } = require('sequelize')
 const Monster = require('../models/monster')
 
-module.exports = async function initializeMonster(environmentId) {
+async function initializeMonster(environmentId) {
   let monsters = await Monster.findAll({ where: { challengeRange: { [Op.between]: [0, 1] }, environmentId: environmentId }})
   let monster = monsters[random(0, monsters.length - 1)]
   if(monster) {
@@ -12,3 +12,5 @@ module.exports = async function initializeMonster(environmentId) {
   }
   return null
 }
+
+module.exports = { initializeMonster }

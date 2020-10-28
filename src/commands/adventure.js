@@ -4,18 +4,14 @@ const Quest = require('../models/quest')
 const Inventory = require('../models/inventory')
 const Environment = require('../models/environment')
 
-const { 
-  heal, 
-  savingThrow, 
-  getUserEquipedItem, 
-  random, throwDice, 
-  initializeMonster, giveExperience, 
-  determineWeaponDamage,
-  triggerEvent, 
-  decrementEquipedItemsCondition, 
-  getUserItemCondition,
-  determineArmorValue,
-  canMove} = require('../utils')
+const { heal } = require('../utils/heal')
+const { canMove } = require('../utils/user')
+const { savingThrow } = require('../utils/fight')
+const { giveExperience } = require('../utils/level')
+const { initializeMonster } = require('../utils/monster')
+const { random, throwDice, triggerEvent } = require('../utils')
+const { getUserEquipedItem, getUserItemCondition } = require('../utils/item')
+const { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition } = require('../utils/equipment')
 
 module.exports = {
   name: 'adventure',

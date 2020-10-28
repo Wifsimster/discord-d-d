@@ -1,14 +1,14 @@
 const { throwDice } = require('./utils')
 const User = require('../models/user')
 
-module.exports = function randomDamage(user) {
+function randomDamage(user) {
   if(user) {
     return { die: throwDice(user.hitDie), strength: user.strength }
   }
   return 0
 }
 
-module.exports = async function savingThrow(userId) {
+async function savingThrow(userId) {
   let messages = []
   let user = await User.findByPk(userId)
   let randomValue = throwDice()
@@ -23,3 +23,5 @@ module.exports = async function savingThrow(userId) {
   }
   return { messages }
 }
+
+module.exports = { randomDamage, savingThrow }
