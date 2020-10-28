@@ -2,6 +2,7 @@
 const User = require('../models/user')
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
+
 const { random } = require('./utils')
 const { getUserContainer, getUserEquipedItem } = require('./item')
 
@@ -10,7 +11,7 @@ async function getUserCurrentWeight(userId) {
 
   if(user) {
     let inventories = user.inventories
-    if(inventories) {
+    if(inventories && inventories.length > 0) {
       let weights = inventories.map(inventory => {
         return inventory.quantity * inventory.item.weight
       })
