@@ -1,8 +1,8 @@
 const Item = require('../models/item')
 const Inventory = require('../models/inventory')
-const { getUserEquipedItem } = require('./user')
+const { getUserEquipedItem } = require('./item')
 
-module.exports = async function determineWeaponDamage(userId) {
+async function determineWeaponDamage(userId) {
   let weapon = await getUserEquipedItem(userId, 'weapon')
 
   if(weapon) {
@@ -16,7 +16,7 @@ module.exports = async function determineWeaponDamage(userId) {
   return null
 }
 
-module.exports = async function determineArmorValue(userId, type = 'armor') {
+async function determineArmorValue(userId, type = 'armor') {
   let armor = await getUserEquipedItem(userId, type)
 
   if(armor) {
@@ -30,7 +30,7 @@ module.exports = async function determineArmorValue(userId, type = 'armor') {
   return 0
 }
 
-module.exports = async function decrementEquipedItemsCondition(userId) {
+async function decrementEquipedItemsCondition(userId) {
   let userWeapon = await getUserEquipedItem(userId, 'weapon')
   if(userWeapon) {
     let userIventoryWeapon = await Inventory.findOne({ where: { userId: userId, itemId: userWeapon.id }})
@@ -50,3 +50,4 @@ module.exports = async function decrementEquipedItemsCondition(userId) {
   }
 }
 
+module.exports = { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition }

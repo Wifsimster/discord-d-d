@@ -1,11 +1,9 @@
 const User = require('../models/user')
-
-const { 
-  getUserEquipedItem, random, throwDice, 
-  triggerEvent, determineWeaponDamage,
-  decrementEquipedItemsCondition, 
-  getUserItemCondition, levelUp, canMove,
-  determineArmorValue} = require('../utils')
+const { random, throwDice, triggerEvent } = require('../utils')
+const { getUserEquipedItem, getUserItemCondition } = require('../utils/item')
+const { canMove } = require('../utils/user')
+const { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition } = require('../utils/equipment')
+const { levelUp } = require('../utils/level')
 
 module.exports = {
   name: 'fight',
