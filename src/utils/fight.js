@@ -2,12 +2,14 @@ const User = require('../models/user')
 const Item = require('../models/item')
 const Quest = require('../models/quest')
 const Inventory = require('../models/inventory')
+const Monster = require('../models/monster')
 
 const { heal } = require('../utils/heal')
 const { giveExperience } = require('../utils/level')
 const { random, throwDice, triggerEvent } = require('../utils')
 const { getUserEquipedItem, getUserItemCondition } = require('../utils/item')
-const { determineWeaponDamage, determineArmorValue } = require('../utils/equipment')
+const { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition } = require('../utils/equipment')
+const { initializeMonster } = require('../utils/monster')
 
 function randomDamage(user) {
   if(user) {
@@ -174,4 +176,52 @@ async function attackPlayer(player, monster) {
   return { messages }
 }
 
-module.exports = { randomDamage, savingThrow, attackMonster, attackPlayer }
+async function groupFightMonster(group, environmentId) {
+  let messages = []
+  let monster = await initializeMonster(environmentId)
+
+  if(monster) {
+    messages.push(`:crossed_swords: A **${monster.name}** attack your group ! (🗡 ${monster.strength}  :shield: ${monster.armorClass}  ❤ ${monster.maxHitPoint})`)
+
+    let index = 0
+    while(index < group.length && monster.currentHitPoint > 0) {
+      let currentPlayer = group[index]
+      
+      let results = await attackMonster(currentPlayer, monster)
+      messages = [...messages, ...results.messages]      
+      monster = results.monster            
+        
+      results = await attackPlayer(currentPlayer, monster)
+      messages = [...messages, ...results.messages]
+      
+      let user = await User.findByPk(currentPlayer.id)
+     
+      if(user.currentHitPoint <= 0) {
+        await decrementEquipedItemsCondition(user.id) 
+        group.splice(index, 1)
+      }
+
+      if(index === group.length - 1) { index = 0 } else { index++ }
+    }
+
+    if(group.length > 0) {
+      // Give monster XP to group          
+      await Promise.all(group.map(async player => {
+        let results = await giveExperience(player, monster)
+        messages = [...messages, ...results.messages]
+      
+        let user = await User.findByPk(player.id)
+        await decrementEquipedItemsCondition(user.id)
+        let randomCoins = random(0, 10 * user.level)
+        await user.update({ coins: user.coins + randomCoins })
+        messages.push(`🏆 **${user.username}** got **${monster.challenge} XP** & **${randomCoins}** 🪙 !`)
+      }))        
+    } else {
+      messages.push('☠ **Everyone dies, loosers !**')
+    }
+  }
+
+  return { messages: messages, group: group }
+}
+
+module.exports = { randomDamage, savingThrow, attackMonster, attackPlayer, groupFightMonster }

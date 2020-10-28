@@ -51,13 +51,13 @@ async function canParticipate(userId) {
         if(weapon) {
           return { value: true }
         } else {
-          return { message: `**${user.username}** you don't have a weapon equiped !`, value: false }
+          return { message: `**${user.username}** doesn't have a weapon equiped !`, value: false }
         }
       } else {
-        return { message: `**${user.username}** you are to heavy to move !`, value: false }
+        return { message: `**${user.username}** is to heavy to move !`, value: false }
       }
     } else {
-      return { message: `**${user.username}** you are not full life !`, value: false }
+      return { message: `**${user.username}** is not full life !`, value: false }
     }
   } else {
     return { message: `**${userId}** doesn't have a character yet !`, value: false }

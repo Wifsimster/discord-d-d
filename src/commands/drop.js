@@ -1,6 +1,7 @@
 const User = require('../models/user')
-const { getItem } = require('../utils')
 const Inventory = require('../models/inventory')
+
+const { getItem } = require('../utils/item')
 
 module.exports = {
   name: 'drop',

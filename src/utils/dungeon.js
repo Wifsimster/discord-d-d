@@ -1,4 +1,12 @@
+const Environment = require('../models/environment')
+
 const { canParticipate } = require('./user')
+const { giveExperience } = require('./level')
+const { initializeMonster } = require('./monster')
+const { random, combatTriggerMessage } = require('./utils')
+const { foundItemEvent } = require('./item')
+const { decrementEquipedItemsCondition } = require('./equipment')
+const { attackMonster, attackPlayer } = require('./fight')
 
 async function handleDungeon(message) {  
   if(message.content.startsWith('Who is ready to enter the')) {
@@ -11,7 +19,7 @@ async function handleDungeon(message) {
     
     const collector = message.createReactionCollector(filter, { time: 2000 })
 
-    collector.on('collect', async (reaction, user) => {
+    collector.on('collect', async(reaction, user) => {
       let results = await canParticipate(user.id)
       if(results.value) {
         group.push(user)
@@ -20,12 +28,12 @@ async function handleDungeon(message) {
       }
     })
     
-    collector.on('end', async collected => { 
-      let dungeonEnvironment = message.content.includes('Forest') ? 'Forest' : null
+    collector.on('end', async() => {
+      let environment = await Environment.findOne({ where: { name: 'Forest' }})
 
       if(group.length > 0) {
-        message.channel.send(`:synagogue: **${group}** enter the **${dungeonEnvironment}** dungeon !`)
-        firstDay(group)
+        message.channel.send(`:synagogue: **${group}** enter the **${environment.name}** dungeon !`)
+        firstDay(group, environment)
       } else {
         message.channel.send('No one is ready !')
       }
@@ -33,12 +41,13 @@ async function handleDungeon(message) {
   }
 }
 
-async function firstDay(group) {
+async function firstDay(group, environment) {
   let messages = []
 
-  await Promise.all(group.map(async player => {
-    let user = await User.findBy(player.id)
-  }))
+  let result = await foundItemEvent(group)
+  if(result) { messages.push(result) }
+
+  messages.push(combatTriggerMessage(group))
 }
 
 module.exports = { handleDungeon }

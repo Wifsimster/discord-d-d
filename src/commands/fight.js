@@ -1,7 +1,8 @@
 const User = require('../models/user')
+
 const { random, throwDice, triggerEvent } = require('../utils')
-const { getUserEquipedItem, getUserItemCondition } = require('../utils/item')
-const { canMove } = require('../utils/user')
+const { getUserEquipedItem } = require('../utils/item')
+const { canParticipate } = require('../utils/user')
 const { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition } = require('../utils/equipment')
 const { levelUp } = require('../utils/level')
 
@@ -14,55 +15,15 @@ module.exports = {
     if(message.mentions.users.first()) {    
       let leader = await User.findByPk(message.author.id)
       let leaderWeapon = await getUserEquipedItem(leader.id, 'weapon')
-
-      if(!leaderWeapon) {
-        message.channel.send(`**${leader.username}** you don't have equiped a weapon !`)
-        return
-      }
+      let results = await canParticipate(message.author.id)
+      if(!results.value) { return message.channel.send(results.message) }
       
-      if(getUserItemCondition(leader.id, leaderWeapon.id) === 0) {
-        message.channel.send(`**${opponent.username}** your weapon is broken, fix it !`)
-        return
-      }
-
-      if(leader.currentHitPoint < leader.maxHitPoint) {
-        message.channel.send(`**${leader.username}**, you are not full life !`)
-        return
-      }
-
-      if(!canMove(leader.id)) {        
-        message.channel.send(`:rock: **${leader.username}**, you carry to much items to fight !`)
-        return
-      }
-  
-      let opponent = await User.findByPk(message.mentions.users.first().id)
-
-      if(!opponent) {
-        return message.channel.send(`**${message.mentions.users.first()}** doesn't have a character ! \`beta create\``)
-      }
-
-      let opponentWeapon = await getUserEquipedItem(opponent.id, 'weapon')
-
-      if(!opponentWeapon) {
-        message.channel.send(`**${opponent.username}** doesn't have equiped a weapon !`)
-        return
-      }
-
-      if(opponent.currentHitPoint < opponent.maxHitPoint) {
-        message.channel.send(`**' ${opponent.username}** is not full life !`)
-        return
-      }
-
-      if(getUserItemCondition(opponent.id, opponentWeapon.id) === 0) {
-        message.channel.send(`**${opponent.username}** have a broken weapon, he need to fixed it !`)
-        return
-      }
-
-      if(!canMove(opponent.id)) {        
-        message.channel.send(`:rock: **${opponent.username}** carried to much items to fight !`)
-        return
-      }
-
+      let opponentId = message.mentions.users.first().id
+      let opponent = await User.findByPk(opponentId)    
+      let opponentWeapon = await getUserEquipedItem(opponentId, 'weapon')  
+      results = await canParticipate(opponentId)
+      if(!results.value) { return message.channel.send(results.message) }
+      
       let leaderWeaponDamage = await determineWeaponDamage(leader.id)
       let opponentWeaponDamage = await determineWeaponDamage(opponent.id)
 
