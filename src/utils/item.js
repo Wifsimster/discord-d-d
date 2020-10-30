@@ -67,21 +67,26 @@ async function getUserUnequipItems(userId) {
   return await Item.findAll({ where: { id: inv }})
 }
 
-async function foundItemEvent(players) {
+async function getRandomItem() {
+  let items = await Item.findAll()
+  return items[random(0, items.length - 1)]
+}
+
+async function foundItemEvent(group) {
   if(triggerEvent()) {
-    let player = players[random(0, players.length - 1)]
+    let player = group[random(0, group.length - 1)]
     let user = await User.findByPk(player.id)
     let items = await Item.findAll()
     let item = items[random(0, items.length - 1)]
     await Inventory.create({ itemId: item.id, userId: user.id})
 
     let tmp = [
-      `🔍 ${user.username} inspect a pile of trash on the road and found a \`${item.name}\` !`,
-      `🎁 ${user.username} return a corpse and take his \`${item.name}\` !`
+      `🔍 **${user.username}** inspect a pile of trash on the road and found a \`${item.name}\` !`,
+      `🎁 **${user.username}** return a corpse and take his \`${item.name}\` !`
     ]
 
     return tmp[random(0, tmp.length - 1)]
   }
 }
 
-module.exports = { getItem, determineItemValue, getUserItemCondition, getUserEquipedItem, getUserContainer, getUserUnequipItems, foundItemEvent }
+module.exports = { getItem, determineItemValue, getUserItemCondition, getUserEquipedItem, getUserContainer, getUserUnequipItems, getRandomItem, foundItemEvent }

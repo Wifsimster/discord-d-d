@@ -6,6 +6,19 @@ const Inventory = require('../models/inventory')
 const { random } = require('./utils')
 const { getUserContainer, getUserEquipedItem } = require('./item')
 
+async function decrementUserCurrentHitPoint(userId, damage) {
+  let user = await User.findByPk(userId)
+
+  if(user && damage) {
+    if(user.currentHitPoint - damage < 0) { 
+      await user.update({ currentHitPoint: 0 })
+    } else {
+      await user.decrement('currentHitPoint', { by: damage })
+    }
+  }
+  return false
+}
+
 async function getUserCurrentWeight(userId) {
   let user = await User.findByPk(userId, { include: [{ model: Inventory, where: { equiped: false }, include: [{ model: Item }] }] })
 
@@ -64,4 +77,4 @@ async function canParticipate(userId) {
   }
 }
 
-module.exports =  { getUserCurrentWeight, canMove, giveTrinket, canParticipate }
+module.exports =  { decrementUserCurrentHitPoint, getUserCurrentWeight, canMove, giveTrinket, canParticipate }

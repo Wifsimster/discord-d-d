@@ -2,7 +2,6 @@ const User = require('../models/user')
 const Item = require('../models/item')
 const Quest = require('../models/quest')
 const Inventory = require('../models/inventory')
-const Monster = require('../models/monster')
 
 const { heal } = require('../utils/heal')
 const { giveExperience } = require('../utils/level')
@@ -11,9 +10,11 @@ const { getUserEquipedItem, getUserItemCondition } = require('../utils/item')
 const { determineWeaponDamage, determineArmorValue, decrementEquipedItemsCondition } = require('../utils/equipment')
 const { initializeMonster } = require('../utils/monster')
 
-function randomDamage(user) {
+async function randomDamage(userId) {
+  let user = await User.findByPk(userId)
+
   if(user) {
-    return { die: throwDice(user.hitDie), strength: user.strength }
+    return throwDice(user.hitDie)
   }
   return 0
 }
