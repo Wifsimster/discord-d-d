@@ -23,7 +23,7 @@ function dungeonCombatMessage(group) {
   return triggers[random(0, triggers.length - 1)]
 }
 
-async function chest(group) {  
+async function chest(group) {
   let messages = []
   let item
   let coins
@@ -61,7 +61,7 @@ async function chest(group) {
   return { messages }
 }
 
-async function trap(group) { 
+async function trap(group) {
   let messages = []
   let player = getRandomPlayer(group)
 
@@ -81,84 +81,127 @@ async function trap(group) {
   return { messages }
 }
 
-async function firstDay(group, environment) {  
-  let results
-  let i = 1
-  let nbRooms = 4
-  let messages = []
-  let rooms = ['chest', 'combat', 'trap']
-
-  messages.push('🏕 **First day in the dungeon. Have a great day adventurers !**')
-
-  while(i <= nbRooms) {
-    messages.push(`=======================\n:thought_balloon: **Room : ${i}/${nbRooms}**\n=======================`)
-
-    let room = rooms[random(0, rooms.length - 1)]
-
-    switch(room) {
-    case 'combat':
-      messages.push(dungeonCombatMessage(group))
-      results = await groupFightMonster(group, environment.id)    
-      break
-    case 'chest':
-      results = await chest(group)
-      break
-    case 'trap':
-      results = await trap(group)
-      break
-    default: 
-    // nothing
-    }
-    messages = [...messages, ...results.messages]
-    i++
-  }
-
-  messages.push('=======================\n:zzz: **It\'s time to recover adventurers !**')  
-  await Promise.all(group.map(async player => { 
-    let results = await heal(player.id)    
-    messages = [...messages, ...results.messages]
-  }))
-  
-  return { messages, group }
-}
-
 async function handleDungeon(message) {
   if(message.content.startsWith('Who is ready to enter the')) {
     message.react('👍')
-    let group = []
 
-    const filter = (reaction, user) => {
-      return reaction.emoji.name === '👍' && !user.bot && user.id !== message.author.id
-    }
+    const filter = (reaction, user) => reaction.emoji.name === '👍' && !user.bot && user.id !== message.author.id
     
-    const collector = message.createReactionCollector(filter, { time: 15000 })
+    message
+      .awaitReactions(filter, { time: 15000, errors: ['time'] })
+      .then(collected => {
+        console.log(collected)
+      }).catch(collected => {
+        if(collected.size > 0) {
+          let group = collected.array()
+        } else {
+          message.channel.send('No one respond to the call !')
+        }
+      })
 
-    collector.on('collect', async(reaction, user) => {
-      let results = await canParticipate(user.id)
-      if(results.value) {
-        group.push(user)
-      } else {
-        message.channel.send(results.message)
-      }
-    })
+    // const collector = message.createReactionCollector(filter, { time: 15000 })
+
+    // collector.on('collect', async(reaction, user) => {
+    //   let results = await canParticipate(user.id)
+    //   if(results.value) {
+    //     group.push(user)
+    //   } else {
+    //     message.channel.send(results.message)
+    //   }
+    // })
     
-    collector.on('end', async() => {
-      let messages = []
-      let environment = await Environment.findOne({ where: { name: 'Forest' }})
-
-      if(group.length > 0) {
-        message.channel.send(`:synagogue: **${group}** enter the **${environment.name}** dungeon !`)
-        let results = await firstDay(group, environment)        
-        messages = [...messages, ...results.messages]
-        group = results.group
-      } else {
-        message.channel.send('No one is ready !')
-      }
-
-      messages.map(m => message.channel.send(m))
-    })
+    // return collector.on('end', async() => {      
+    //   if(group.length > 0) {
+    //     let environment = await Environment.findOne({ where: { name: 'Forest' }})
+    //     message.channel.send(`:synagogue: **${group}** enter the **${environment.name}** dungeon !`)
+    //     await firstDay(message)
+    //     return group
+    //   } else {
+    //     message.channel.send('No one is ready !')
+    //   }
+    // })
   }
 }
 
+async function firstDay(message) {
+  message.channel.send('🏕 First day in the dungeon. Have a great day adventurers !')  
+  message.channel.send('Who will enter the room first ?') 
+  
+  // let results
+  // let i = 1
+  // let nbRooms = 4
+  // let messages = []
+  // let rooms = ['chest', 'combat', 'trap']
 
-module.exports = { chest, trap, handleDungeon }
+  // while(i <= nbRooms) {
+  //   messages.push(`=======================\n:thought_balloon: **Room : ${i}/${nbRooms}**\n=======================`)
+
+  //   let room = rooms[random(0, rooms.length - 1)]
+
+  //   switch(room) {
+  //   case 'combat':
+  //     messages.push(dungeonCombatMessage(group))
+  //     results = await groupFightMonster(group, environment.id)    
+  //     break
+  //   case 'chest':
+  //     results = await chest(group)
+  //     break
+  //   case 'trap':
+  //     results = await trap(group)
+  //     break
+  //   default: 
+  //   // nothing
+  //   }
+  //   messages = [...messages, ...results.messages]
+  //   i++
+  // }
+
+  // messages.push('=======================\n:zzz: **It\'s time to recover adventurers !**')  
+  // await Promise.all(group.map(async player => { 
+  //   let results = await heal(player.id)    
+  //   messages = [...messages, ...results.messages]
+  // }))
+  
+  // return { messages, group }
+}
+
+async function enterRoom(message, group, leader) {
+  let rooms = ['chest', 'combat', 'trap']
+  let room = rooms[random(0, rooms.length - 1)]
+
+  switch(room) {
+  case 'combat':
+    message.channel.send(dungeonCombatMessage(group))
+    results = await groupFightMonster(group, environment.id)    
+    break
+  case 'chest':
+    results = await chest(group)
+    break
+  case 'trap':
+    results = await trap(group)
+    break
+  default: 
+      // nothing
+  }
+}
+
+async function handleRoom(message, group) {
+  if(message.content === 'Who will enter the room first ?') {
+    message.react('✋')
+    const filter = (reaction, user) => reaction.emoji.name === '✋' && !user.bot && user.id !== message.author.id
+  
+    // message.channel.send(`=======================\n:thought_balloon: **Room : ${i}/${nbRooms}**\n=======================`)
+
+    message
+      .awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+      .then(async collected => {
+        let reactions = collected.array()
+        let player = reactions[0].client.user
+        let leader = await User.findByPk(player.id)
+
+        await enterRoom(message, group, leader)
+      })
+  }
+}
+
+module.exports = { chest, trap, handleDungeon, handleRoom }

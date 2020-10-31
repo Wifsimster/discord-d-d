@@ -4,7 +4,8 @@ const client = new Discord.Client()
 client.commands = new Discord.Collection()
 const cooldowns = new Discord.Collection()
 
-const { random, handleDungeon } = require('./utils/dungeon')
+const { handleDungeon, handleRoom } = require('./utils/dungeon')
+const { random } = require('./utils')
 
 require('./models/associations')
 
@@ -21,9 +22,8 @@ for (const file of commandFiles) {
 client.login(token)
 
 client.once('ready', async () => {
+  // await sequelize.sync({ alter: true })
   // await syncTables()  
-  // await sequelize.sync({})
-  // await sequelize.sync({ force: true })
 
   try {
     await sequelize.authenticate()
@@ -39,8 +39,9 @@ client.on('ready', () => {
 })
 
 client.on('message', async message => {
-  // Dungeon
-  handleDungeon(message)
+  let group = await handleDungeon(message)
+  
+  handleRoom(message, group)
 
   // General
   if(!message.content.toLowerCase().startsWith(prefix) || message.author.bot) {

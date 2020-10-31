@@ -7,6 +7,7 @@ const User = require('./user')
 const Item = require('./item')
 const Inventory = require('./inventory')
 const Quest = require('./quest')
+const Group = require('./group')
 
 Monster.belongsTo(Environment)
 Environment.hasMany(Monster)
@@ -16,6 +17,9 @@ Class.hasMany(User)
   
 User.belongsTo(Race)
 Race.hasMany(User)
+
+User.belongsTo(Group)
+Group.hasMany(User)
 
 User.belongsTo(Environment)
 Environment.hasMany(User)
