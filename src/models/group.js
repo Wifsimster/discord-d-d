@@ -7,6 +7,6 @@ const Group = sequelize.define('group', {
     allowNull: false,
     unique: true
   }
-})
+}, { freezeTableName: true })
 
 module.exports = Group
