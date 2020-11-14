@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const Group = require('../models/group')
 const Environment = require('../models/environment')
 
 const { heal } = require('./heal')

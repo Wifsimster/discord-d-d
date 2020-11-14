@@ -12,7 +12,7 @@ module.exports = {
       .setTitle('Commands')
       .setDescription('Add `beta` before any command')
       .addFields(
-        { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`' },
+        { name: 'Characters', value: '`create`, `destroy`, `profile`, `top`, `group`' },
         { name: 'Fighting commands', value: '`adventure`, `fight`, `heal`' },
         { name: 'Inventory', value: '`inventory`, `equip`, `unequip`, `shop`, `buy`, `repair`' },
         { name: 'Items', value: '`item`' },

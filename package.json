@@ -1,11 +1,9 @@
 {
   "name": "discord-d-d",
-  "version": "1.0.0",
-  "description": "Discord Dungeons &amp; Dragons",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "version": "0.0.1",
+  "description": "Opiniated discord bot for Dungeons &amp; Dragons",
+  "main": "src/server.js",
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Wifsimster/discord-d-d.git"
@@ -22,6 +20,6 @@
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.12.0"
+    "eslint": "^7.13.0"
   }
 }
